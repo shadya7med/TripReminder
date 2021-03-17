@@ -9,7 +9,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TripReminder">
-        <activity android:name=".MainActivity">
+        <service
+            android:name=".ReminderService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity android:name=".PastTripsActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
