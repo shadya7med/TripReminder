@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.iti.example.tripreminder">
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -15,9 +16,9 @@
             android:exported="true"></service>
 
         <activity android:name=".PastTripsActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".HomeActivity" />
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".HomeActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

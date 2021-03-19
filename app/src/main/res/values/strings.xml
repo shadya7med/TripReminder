@@ -1,5 +1,18 @@
 <resources>
     <string name="app_name">TripReminder</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment">hello_blank_fragment</string>
+    <string name="login">Login</string>
+    <string name="OR">_____________ OR _____________</string>
+    <string name="google_login">Gmail</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="new_account">Do not have account?,</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="rePassword">Repeat Password</string>
+    <string name="phone">Mobile</string>
+    <string name="google_sign_up">Or Sign up using</string>
+    <string name="sign_up_page">Sign Up</string>
+    <string name="sign_up_txt"><u>Sign Up</u></string>
+    <string name="google_signup">Sign Up With Google</string>
 </resources>
