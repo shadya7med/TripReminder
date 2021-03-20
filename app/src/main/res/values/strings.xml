@@ -15,4 +15,15 @@
     <string name="sign_up_page">Sign Up</string>
     <string name="sign_up_txt"><u>Sign Up</u></string>
     <string name="google_signup">Sign Up With Google</string>
+
+    <!-- menu Items -->
+    <string name="upComing_item">UpComing</string>
+    <string name="past_trip_item">Past Trips</string>
+    <string name="sync_item">Sync</string>
+    <string name="logout_item">Log Out</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="history">History</string>
+    <string name="map">Map</string>
+    <string name="general">General</string>
 </resources>

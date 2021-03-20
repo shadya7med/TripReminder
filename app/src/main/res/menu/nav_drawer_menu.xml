@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/general">
+        <menu>
+            <item
+                android:id="@+id/item_upcoming_nav_menu"
+                android:icon="@drawable/ic_baseline_home_24"
+                android:title="@string/upComing_item" />
+            <item
+                android:id="@+id/item_past_trip_nav_menu"
+                android:icon="@drawable/ic_baseline_history_24"
+                android:title="@string/past_trip_item" />
+
+            <item
+                android:id="@+id/item_sync_nav_menu1"
+                android:icon="@drawable/ic_baseline_sync_24"
+                android:title="@string/sync_item" />
+        </menu>
+    </item>
+
+
+    <item
+        android:id="@+id/item_logout_nav_menu"
+        android:icon="@drawable/ic_baseline_history_24"
+        android:title="@string/logout_item" />
+
+
+</menu>
