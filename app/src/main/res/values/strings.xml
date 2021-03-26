@@ -26,4 +26,25 @@
     <string name="history">History</string>
     <string name="map">Map</string>
     <string name="general">General</string>
+    <string name="home">Home</string>
+    <string name="add">Add Note</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit">"Save "</string>
+    <string name="name">Trip Name :</string>
+    <string name="notes">My Notes :</string>
+    <string name="destination">My Destination :</string>
+    <string name="date">Date :</string>
+    <string name="time">Time :</string>
+    <string name="ok">Ok</string>
+    <string name="tripname">Trip Name...</string>
+    <string name="note">My Notes ...</string>
+    <string name="dest">My Desination ...</string>
+    <string name="daty">dd/mm/yyyy</string>
+    <string name="timy">00:00</string>
+    <string name="addnewtrip">Add Trip</string>
+    <string name="lastTrips">Latest Trips</string>
+    <string name="NOTE">Notes</string>
+    <string name="EDIT">Edit Trip</string>
+    <string name="TRIP">Add New Trip</string>
+    <string name="TRIPS">Trip Details</string>
 </resources>

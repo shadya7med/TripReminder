@@ -21,6 +21,10 @@
         <activity android:name=".HomeActivity"
             android:theme="@style/Theme.NoActionBar"/>
         <activity android:name=".SignUpActivity" />
+        <activity android:name=".AddNewTrip"/>
+        <activity android:name=".AddNotes"/>
+        <activity android:name=".EditTrip"/>
+        <activity android:name=".ViewTrip"/>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
