@@ -1,4 +1,4 @@
-package com.iti.example.tripreminder;
+package com.iti.example.tripreminder.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +16,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.iti.example.tripreminder.R;
 
 
 public class MapFragment extends Fragment {

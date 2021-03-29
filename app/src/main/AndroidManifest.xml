@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -13,23 +14,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TripReminder">
         <service
-            android:name=".ReminderService"
+            android:name=".Services.FloatingWidgetService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="false"></service>
 
-        <activity android:name=".PastTripsActivity"
+        <activity android:name=".Activities.PastTripsActivity"
             android:theme="@style/Theme.NoActionBar"/>
-        <activity android:name=".HomeActivity"
+        <activity android:name=".Activities.HomeActivity"
             android:theme="@style/Theme.NoActionBar"/>
-        <activity android:name=".SignUpActivity"
+        <activity android:name=".Activities.SignUpActivity"
             android:theme="@style/Theme.NoActionBar"/>
-        <activity android:name=".AddNewTrip"
+        <activity android:name=".Activities.AddNewTripActivity"
             android:theme="@style/Theme.NoActionBar"/>
-        <activity android:name=".EditTrip"
+        <activity android:name=".Activities.EditTripActivity"
             android:theme="@style/Theme.NoActionBar"/>
-        <activity android:name=".ViewTrip"
+        <activity android:name=".Activities.ViewTripActivity"
             android:theme="@style/Theme.NoActionBar"/>
-        <activity android:name=".LoginActivity"
+        <activity android:name=".Activities.LoginActivity"
             android:theme="@style/Theme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

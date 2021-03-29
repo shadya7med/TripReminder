@@ -1,4 +1,4 @@
-package com.iti.example.tripreminder;
+package com.iti.example.tripreminder.Fragments;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;

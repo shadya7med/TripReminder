@@ -1,4 +1,4 @@
-package com.iti.example.tripreminder;
+package com.iti.example.tripreminder.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,19 +9,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.WorkManager;
+
+import com.iti.example.tripreminder.Models.Trips;
+import com.iti.example.tripreminder.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.ViewHolder> {
     private LayoutInflater layoutInflater;
-    private List<String> data;
+    private ArrayList<Trips> tripsList;
+    private int duration;
+    private Context context;
 
-    Adapter (Context context,List<String> data){
+    public TripsListAdapter(Context context, ArrayList<Trips> tripsList){
+        this.context = context ;
         this.layoutInflater = LayoutInflater.from(context);
-        this.data = data;
+        this.tripsList = tripsList;
     }
 
 
@@ -34,12 +39,20 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-          String title = data.get(i);
+          duration = 10 ;
+          String title = tripsList.get(i).tripName;
           viewHolder.TripName.setText(title);
+          viewHolder.start.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                    //stop work scheduled for current trip
+                  WorkManager.getInstance(context).cancelAllWorkByTag(title);
+              }
+          });
     }
 
     @Override
-    public int getItemCount() {return data.size();}
+    public int getItemCount() {return tripsList.size();}
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         Intent edit_trip_intent,start_trip_intent;
@@ -57,7 +70,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             start = v.findViewById(R.id.start_img);
             delete = v.findViewById(R.id.delete_img);
             //Intents
-           // edit_trip_intent = new Intent(getActivity(),EditTrip.class);
+           // edit_trip_intent = new Intent(getActivity(),EditTripActivity.class);
             //start_trip_intent = new Intent(getActivity(),MapFragment.class);
             //OnClick Action Buttons
            // edit.setOnClickListener(v -> startActivity(edit_trip_intent));

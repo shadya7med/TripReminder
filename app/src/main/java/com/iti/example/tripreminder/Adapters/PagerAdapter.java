@@ -1,9 +1,12 @@
-package com.iti.example.tripreminder;
+package com.iti.example.tripreminder.Adapters;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+
+import com.iti.example.tripreminder.Fragments.HistoryFragment;
+import com.iti.example.tripreminder.Fragments.MapFragment;
 
 public class PagerAdapter extends FragmentPagerAdapter {
 

@@ -47,4 +47,12 @@
     <string name="EDIT">Edit Trip</string>
     <string name="TRIP">Add New Trip</string>
     <string name="TRIPS">Trip Details</string>
+    <string name="neutral">SNOOZE</string>
+    <string name="dialog_title">Trip Reminder</string>
+    <string name="dialog_msg">trip name</string>
+    <string name="start">START</string>
+    <string name="note_body">Fake Note Body</string>
+    <string name="channel_name">Reminder Channel</string>
+    <string name="channel_description">this is the reminder channel only app</string>
+
 </resources>

@@ -1,4 +1,4 @@
-package com.iti.example.tripreminder;
+package com.iti.example.tripreminder.Activities;
 /* ******************** *
  * Author: We'am  Kamal *
  * Date : 26th Mar 2021 *
@@ -9,7 +9,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class EditTrip extends AppCompatActivity {
+import com.iti.example.tripreminder.R;
+
+public class EditTripActivity extends AppCompatActivity {
     TextView tripName,notes,destination,date,time;
     Button save,cancel;
 
@@ -25,8 +27,8 @@ public class EditTrip extends AppCompatActivity {
         save = findViewById(R.id.btn_edit_editTrip);
         cancel = findViewById(R.id.btn_cancel_editTrip);
 
-        save.setOnClickListener(v -> { SaveEditedData(); startActivity(new Intent(EditTrip.this,HomeActivity.class));});
-        cancel.setOnClickListener(v -> startActivity(new Intent(EditTrip.this,HomeActivity.class)));
+        save.setOnClickListener(v -> { SaveEditedData(); startActivity(new Intent(EditTripActivity.this, HomeActivity.class));});
+        cancel.setOnClickListener(v -> startActivity(new Intent(EditTripActivity.this,HomeActivity.class)));
     }
     void SaveEditedData(){
         String edited_name,edited_notes,edited_destination,edited_date,edited_time;

@@ -1,4 +1,4 @@
-package com.iti.example.tripreminder;
+package com.iti.example.tripreminder.Fragments;
 /* ********************* *
  * Author: Abeer Mickawy *
  * Date : 19th Mar 2021  *
@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
+import com.iti.example.tripreminder.Adapters.PagerAdapter;
+import com.iti.example.tripreminder.R;
 
 
 public class PastTripFragment extends Fragment {
