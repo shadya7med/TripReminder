@@ -17,15 +17,20 @@
             android:enabled="true"
             android:exported="true"></service>
 
-        <activity android:name=".PastTripsActivity" />
+        <activity android:name=".PastTripsActivity"
+            android:theme="@style/Theme.NoActionBar"/>
         <activity android:name=".HomeActivity"
             android:theme="@style/Theme.NoActionBar"/>
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".AddNewTrip"/>
-        <activity android:name=".AddNotes"/>
-        <activity android:name=".EditTrip"/>
-        <activity android:name=".ViewTrip"/>
-        <activity android:name=".LoginActivity">
+        <activity android:name=".SignUpActivity"
+            android:theme="@style/Theme.NoActionBar"/>
+        <activity android:name=".AddNewTrip"
+            android:theme="@style/Theme.NoActionBar"/>
+        <activity android:name=".EditTrip"
+            android:theme="@style/Theme.NoActionBar"/>
+        <activity android:name=".ViewTrip"
+            android:theme="@style/Theme.NoActionBar"/>
+        <activity android:name=".LoginActivity"
+            android:theme="@style/Theme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

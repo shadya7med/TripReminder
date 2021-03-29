@@ -25,7 +25,6 @@ public class EditTrip extends AppCompatActivity {
         save = findViewById(R.id.btn_edit_editTrip);
         cancel = findViewById(R.id.btn_cancel_editTrip);
 
-        notes.setOnClickListener(v -> startActivity(new Intent(EditTrip.this,AddNotes.class)));
         save.setOnClickListener(v -> { SaveEditedData(); startActivity(new Intent(EditTrip.this,HomeActivity.class));});
         cancel.setOnClickListener(v -> startActivity(new Intent(EditTrip.this,HomeActivity.class)));
     }
