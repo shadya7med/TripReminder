@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.iti.example.tripreminder.Models.Trips;
 
@@ -24,18 +25,25 @@ public interface TripDao {
     @Query("SELECT * FROM trips")
     List<Trips> getAllTrips() ;
 
+    @Query("SELECT * FROM trips WHERE trip_type = :type")
+    List<Trips> getTripsByType(String type);
+
     @Query("SELECT * FROM trips WHERE tripId = :tripID")
     Trips getTripByID(int tripID);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertOne(Trips trip);
+    long insertOne(Trips trip);
 
     @Insert
-    void insertAll(Trips...trips);
+    void insertAll(List<Trips> trips);
 
     @Delete
     void deleteTrip(Trips trip);
 
+    @Update
+    void update(Trips trip);
 
+    @Query("UPDATE trips set trip_type = :sType WHERE tripId = :sID")
+    void update(int sID,String sType);
 
 }

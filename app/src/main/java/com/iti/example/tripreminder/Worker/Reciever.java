@@ -6,17 +6,27 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.wifi.aware.DiscoverySession;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.WorkManager;
 
+import com.iti.example.tripreminder.Activities.AddNewTripActivity;
 import com.iti.example.tripreminder.Activities.HomeActivity;
+import com.iti.example.tripreminder.Fragments.UpComingFragment;
+import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
+import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
+import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
 import com.iti.example.tripreminder.Services.FloatingWidgetService;
 
 import java.util.ArrayList;
@@ -24,7 +34,7 @@ import java.util.ArrayList;
 public class Reciever extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        ArrayList<Trips> tripsList;
         int notificationId = 1;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.dialog_title)
@@ -32,8 +42,19 @@ public class Reciever extends BroadcastReceiver {
                 .setPositiveButton(R.string.start, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
+                        // Toast.makeText(context, intent.getStringExtra(AddNewTripActivity.TRIP_ID), Toast.LENGTH_SHORT).show();
+                        Log.i("tag", intent.getStringExtra(AddNewTripActivity.TRIP_ID));
                         Log.i("msg", "fire");
-
+                        int tripId = Integer.parseInt(intent.getStringExtra(AddNewTripActivity.TRIP_ID));
+                        AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                db.tripDao().update(tripId, "History");
+                                //trip added to local trips array list
+                               //  notesListUpdater.sendMessage(new Message());
+                            }
+                        }.start();
                         // Creates an Intent that will load a map of San Francisco
                         Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
                         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -51,12 +72,13 @@ public class Reciever extends BroadcastReceiver {
                         /*show floating widget*/
                         Intent showNotesFWS = new Intent(context, FloatingWidgetService.class);
                         //send Notes List
-                        showNotesFWS.putExtra(FloatingWidgetService.NOTES_LIST,notesList);
+                        showNotesFWS.putExtra(FloatingWidgetService.NOTES_LIST, notesList);
                         //start service
                         context.startService(showNotesFWS);
 
                         //cancel the current work
                         WorkManager.getInstance(context).cancelAllWorkByTag("reminder");
+
 
                     }
                 })
@@ -77,7 +99,7 @@ public class Reciever extends BroadcastReceiver {
                 //openDialogFromNotifcationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, openDialogFromNotifcationIntent, 0);
                 /*create non-swipeable notification*/
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"1" )
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
                         .setSmallIcon(R.drawable.notification_icon)
                         .setContentTitle("Trip Reminder")
                         .setContentText("Trip Info: this is Trip Reminder notification")
@@ -93,10 +115,10 @@ public class Reciever extends BroadcastReceiver {
             }
         });
         AlertDialog alertDialog = builder.create();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // Do something for Android Pie and above versions
             alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-        } else{
+        } else {
             // do something for phones running an SDK before Android Pie
             alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         }

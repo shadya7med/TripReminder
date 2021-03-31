@@ -49,6 +49,7 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
                   WorkManager.getInstance(context).cancelAllWorkByTag(title);
               }
           });
+
     }
 
     @Override

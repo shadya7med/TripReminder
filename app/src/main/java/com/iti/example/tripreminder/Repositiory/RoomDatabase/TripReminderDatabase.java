@@ -40,6 +40,7 @@ public class TripReminderDatabase {
         return mInstance;
     }
 
+
     public AppDatabase getAppDatabase() {
         return appDatabase;
     }
