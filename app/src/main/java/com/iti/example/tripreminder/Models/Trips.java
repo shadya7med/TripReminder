@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Entity
 public class Trips implements Serializable {
     @PrimaryKey(autoGenerate = true)
-    public int tripId;
+    public long tripId;
 
     @ColumnInfo(name = "trip_name")
     public String tripName ;

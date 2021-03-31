@@ -19,7 +19,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,10 +31,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.iti.example.tripreminder.Fragments.TimerPickerFragment;
 import com.iti.example.tripreminder.Fragments.UpComingFragment;
 import com.iti.example.tripreminder.Models.Trips;
+import com.iti.example.tripreminder.R;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
 import com.iti.example.tripreminder.Worker.MyWorker;
-import com.iti.example.tripreminder.R;
 
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +43,7 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
     private static final String TAG = "AddNewTripActivity";
     private static final String TAG2 = "Time Picker";
     public static final String TRIP_ID = "trip_id";
+    public static final String TRIP_NAME_KEY = "trip_name";
     TextInputLayout tripName,notes,destination;
     TextView tripDateTextView , tripTimeTextView;
     Button add,cancel;
@@ -98,7 +98,7 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
                     Bundle bundle = msg.getData();
                     String id = bundle.getString(TRIP_ID);
                     Data tripName = new Data.Builder()
-                            .putString(HomeActivity.TRIP_NAME_KEY,trip.tripName)
+                            .putString(AddNewTripActivity.TRIP_NAME_KEY,trip.tripName)
                             .putString(TRIP_ID, String.valueOf(id))
                             .build();
            /* Data tripId = new Data.Builder()

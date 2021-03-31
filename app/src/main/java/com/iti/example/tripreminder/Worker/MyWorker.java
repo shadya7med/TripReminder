@@ -24,11 +24,11 @@ public class MyWorker extends Worker {
     @Override
     public Result doWork() {
 
-        String tripName = getInputData().getString(HomeActivity.TRIP_NAME_KEY);
+        String tripName = getInputData().getString(AddNewTripActivity.TRIP_NAME_KEY);
         String tripId = getInputData().getString(AddNewTripActivity.TRIP_ID);
         Intent actionIntent = new Intent();
         actionIntent.setAction(HomeActivity.ACTION);
-        actionIntent.putExtra(HomeActivity.TRIP_NAME_KEY,tripName);
+        actionIntent.putExtra(AddNewTripActivity.TRIP_NAME_KEY,tripName);
         actionIntent.putExtra(AddNewTripActivity.TRIP_ID,tripId);
         getApplicationContext().sendBroadcast(actionIntent);
 

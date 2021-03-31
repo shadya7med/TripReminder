@@ -44,6 +44,6 @@ public interface TripDao {
     void update(Trips trip);
 
     @Query("UPDATE trips set trip_type = :sType WHERE tripId = :sID")
-    void update(int sID,String sType);
+    void update(long sID,String sType);
 
 }

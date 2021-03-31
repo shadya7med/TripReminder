@@ -48,7 +48,7 @@ import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final String ACTION = "startReceiver";
-    public static final String TRIP_NAME_KEY = "trip_name";
+
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle actionBarDrawerToggle;
     Toolbar toolbar;
