@@ -1,6 +1,5 @@
 package com.iti.example.tripreminder.Fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.iti.example.tripreminder.Activities.PastTripsActivity;
 import com.iti.example.tripreminder.Adapters.TripsListAdapter;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
@@ -54,8 +52,8 @@ public class HistoryFragment extends Fragment {
             @Override
             public void run() {
                 tripsList.clear();
-                tripsList.addAll(db.tripDao().getTripsByType("History"));
-                notesListUpdater.handleMessage(new Message());
+                tripsList.addAll(db.tripDao().getTripsByStatus("History"));
+                notesListUpdater.sendMessage(new Message());
             }
         }.start();
         tripsList = new ArrayList<>();

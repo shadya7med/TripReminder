@@ -44,6 +44,12 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
     private static final String TAG2 = "Time Picker";
     public static final String TRIP_ID = "trip_id";
     public static final String TRIP_NAME_KEY = "trip_name";
+
+    public static final String TRIP_STATUS_UPCOMING = "UPCOMING" ;
+    public static final String TRIP_STATUS_STARTED = "STARTED" ;
+    public static final String TRIP_STATUS_CANCELED = "CANCELED" ;
+
+
     TextInputLayout tripName,notes,destination;
     TextView tripDateTextView , tripTimeTextView;
     Button add,cancel;
@@ -167,7 +173,7 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
         trip.tripName = tripName.getEditText().getText().toString();
         trip.tripDate = tripDateTextView.getText().toString();
         trip.tripTime = tripTimeTextView.getText().toString();
-        trip.tripType = "Upcoming";
+        trip.tripType = AddNewTripActivity.TRIP_STATUS_UPCOMING;
         return trip;
     }
 }

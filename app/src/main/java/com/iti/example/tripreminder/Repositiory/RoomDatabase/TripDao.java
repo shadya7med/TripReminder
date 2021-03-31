@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.iti.example.tripreminder.Models.Notes;
 import com.iti.example.tripreminder.Models.Trips;
 
 import java.util.List;
@@ -22,11 +23,14 @@ import java.util.List;
 public interface TripDao {
 
 
-    @Query("SELECT * FROM trips")
-    List<Trips> getAllTrips() ;
+    @Query("SELECT * FROM trips WHERE userId = :userId")
+    List<Trips> getAllTripsForUser(String userId) ;
 
-    @Query("SELECT * FROM trips WHERE trip_type = :type")
-    List<Trips> getTripsByType(String type);
+    @Query("SELECT * FROM trips WHERE trip_status = :status")
+    List<Trips> getTripsByStatus(String status);
+
+    @Query("SELECT * FROM trips WHERE trip_status = :status AND userId = :userId ")
+    List<Trips> getTripsForUserByStatus(String userId,String status);
 
     @Query("SELECT * FROM trips WHERE tripId = :tripID")
     Trips getTripByID(int tripID);
@@ -34,7 +38,7 @@ public interface TripDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertOne(Trips trip);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Trips> trips);
 
     @Delete
@@ -45,5 +49,10 @@ public interface TripDao {
 
     @Query("UPDATE trips set trip_type = :sType WHERE tripId = :sID")
     void update(long sID,String sType);
+
+
+    /*Notes DAO*/
+    @Insert
+    void insertNotes(List<Notes> notes);
 
 }

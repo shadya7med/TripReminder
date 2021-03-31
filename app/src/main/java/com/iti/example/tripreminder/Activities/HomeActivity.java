@@ -7,15 +7,10 @@ package com.iti.example.tripreminder.Activities;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -34,8 +28,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.iti.example.tripreminder.Fragments.PastTripFragment;
 import com.iti.example.tripreminder.Fragments.UpComingFragment;
 import com.iti.example.tripreminder.Models.Trips;
@@ -44,10 +41,12 @@ import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
 import com.iti.example.tripreminder.Worker.Reciever;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final String ACTION = "startReceiver";
+    public static final String DEFAULT_FRAGMENT = "UPCOMING_FRAG";
+
 
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle actionBarDrawerToggle;
@@ -58,9 +57,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     FirebaseAuth auth;
     TextView headerEmail;
     View headerView;
-    ArrayList<Trips> tripsList;
     AppDatabase db;
-    DatabaseReference connectedRef;
+    DatabaseReference rtTripsRef;
     String userId;
     String userEmail;
 
@@ -94,7 +92,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         // load default fragment
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.fragment_container_nav_content_main, new UpComingFragment(this));
+        fragmentTransaction.add(R.id.fragment_container_nav_content_main, new UpComingFragment(this),DEFAULT_FRAGMENT);
         fragmentTransaction.commit();
 
 
@@ -133,7 +131,58 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(HomeActivity.this, LoginActivity.class));
         }
         if (item.getItemId() == R.id.item_sync_nav_menu1) {
-            db = TripReminderDatabase.getInstance(this).getAppDatabase();
+            new Thread(){
+                @Override
+                public void run() {
+                    db = TripReminderDatabase.getInstance(HomeActivity.this).getAppDatabase();
+                    List<Trips> trips = db.tripDao().getAllTripsForUser(userId);
+                    if (trips.size() == 0) {
+                        //fetch trips from RTDB
+                        rtTripsRef = FirebaseDatabase.getInstance().getReference("Trips");
+                        // Read from the database
+                        rtTripsRef.child(userId).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot TripsSnapShot) {
+                                if (TripsSnapShot.exists()) {
+                                    for (DataSnapshot tripData : TripsSnapShot.getChildren()) {
+                                        Trips trip = tripData.getValue(Trips.class);
+                                        trip.userId = userId ;
+                                        trips.add(trip);
+                                    }
+                                    new Thread(){
+                                        @Override
+                                        public void run() {
+                                            db.tripDao().insertAll(trips);
+                                            fragmentManager
+                                                    .beginTransaction()
+                                                    .replace(R.id.fragment_container_nav_content_main,new UpComingFragment(HomeActivity.this))
+                                                    .addToBackStack(null)
+                                                    .commit();
+                                        }
+                                    }.start();
+
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                // Failed to read value
+                                Log.i("msg", "Failed to read value.", error.toException());
+                            }
+                        });
+                    } else {
+                        //replace RTDB with Room Content
+                        rtTripsRef = FirebaseDatabase.getInstance().getReference("Trips");
+                        rtTripsRef.child(userId).setValue(trips);
+
+                    }
+                }
+            }.start();
+
+
+
+            /*db = TripReminderDatabase.getInstance(this).getAppDatabase();
             connectedRef = FirebaseDatabase.getInstance().getReference("Trips");
             new Thread(){
                 @Override
@@ -141,8 +190,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     tripsList = (ArrayList<Trips>) db.tripDao().getAllTrips();
                     connectedRef.child(userId).setValue(tripsList);
                 }
-            }.start();
-            Toast.makeText(this, "sync", Toast.LENGTH_SHORT).show();
+            }.start();*/
+            Toast.makeText(this, "Syncing Data...", Toast.LENGTH_LONG).show();
         }
         return true;
     }
