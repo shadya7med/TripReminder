@@ -17,6 +17,7 @@ import androidx.work.WorkManager;
 
 import com.iti.example.tripreminder.Activities.AddNewTripActivity;
 import com.iti.example.tripreminder.Activities.HomeActivity;
+import com.iti.example.tripreminder.Fragments.UpComingFragment;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 public class Reciever extends BroadcastReceiver {
     private String tripId;
     private String tripName;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         tripId = intent.getStringExtra(AddNewTripActivity.TRIP_ID);
@@ -41,14 +43,14 @@ public class Reciever extends BroadcastReceiver {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
                         // Toast.makeText(context, intent.getStringExtra(AddNewTripActivity.TRIP_ID), Toast.LENGTH_SHORT).show();
-                        Log.i("tag", ""+tripId);
+                        Log.i("tag", "" + tripId);
                         Log.i("msg", "fire");
 
                         AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
                         new Thread() {
                             @Override
                             public void run() {
-                                db.tripDao().update(Long.parseLong(tripId), "History");
+                                db.tripDao().update(Long.parseLong(tripId), AddNewTripActivity.TRIP_STATUS_STARTED);
                                 //trip added to local trips array list
                                 //  notesListUpdater.sendMessage(new Message());
                             }
@@ -61,18 +63,33 @@ public class Reciever extends BroadcastReceiver {
                         if (mapIntent.resolveActivity(context.getPackageManager()) != null) {
                             context.startActivity(mapIntent);
                         }
+                        //filled from Database
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                //filed Notes from Notes Table
+                                ArrayList<String> notesList = new ArrayList<>();
+                                notesList.add("this is th first");
+                                notesList.add("this is the second");
+                                notesList.add("this is the third");
 
-                        ArrayList<String> notesList = new ArrayList<>();
-                        notesList.add("this is th first");
-                        notesList.add("this is the second");
-                        notesList.add("this is the third");
+                                /*show floating widget*/
+                                Intent showNotesFWS = new Intent(context, FloatingWidgetService.class);
+                                //send Notes List
+                                showNotesFWS.putExtra(FloatingWidgetService.NOTES_LIST, notesList);
+                                //start service
+                                context.startService(showNotesFWS);
+                            }
+                        }.start();
 
-                        /*show floating widget*/
-                        Intent showNotesFWS = new Intent(context, FloatingWidgetService.class);
-                        //send Notes List
-                        showNotesFWS.putExtra(FloatingWidgetService.NOTES_LIST, notesList);
-                        //start service
-                        context.startService(showNotesFWS);
+                        HomeActivity homeActivity = (HomeActivity) context;
+                        UpComingFragment upComingFragment = (UpComingFragment) homeActivity.getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
+                        homeActivity
+                                .getSupportFragmentManager()
+                                .beginTransaction()
+                                .detach(upComingFragment)
+                                .attach(upComingFragment)
+                                .commit();
 
 
                         //cancel the current work
@@ -85,6 +102,14 @@ public class Reciever extends BroadcastReceiver {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
                         Log.i("msg", "cancel");
+                        AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                db.tripDao().update(Long.parseLong(tripId), AddNewTripActivity.TRIP_STATUS_CANCELED);
+
+                            }
+                        }.start();
                         WorkManager.getInstance(context).cancelAllWorkByTag("reminder");
                         dialog.dismiss();
                     }
@@ -98,13 +123,13 @@ public class Reciever extends BroadcastReceiver {
                         Intent openDialogFromNotifcationIntent = new Intent();
                         openDialogFromNotifcationIntent.setAction(HomeActivity.ACTION);
                         openDialogFromNotifcationIntent.putExtra(AddNewTripActivity.TRIP_NAME_KEY, tripName);
-                        openDialogFromNotifcationIntent.putExtra(AddNewTripActivity.TRIP_ID,tripId);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, genId, openDialogFromNotifcationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+                        openDialogFromNotifcationIntent.putExtra(AddNewTripActivity.TRIP_ID, tripId);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, genId, openDialogFromNotifcationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                         /*create non-swipeable notification*/
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
                                 .setSmallIcon(R.drawable.notification_icon)
                                 .setContentTitle("Trip Reminder")
-                                .setContentText("Trip Info: this is Trip Reminder notification")
+                                .setContentText("Trip Name" + tripName)
                                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                 .setContentIntent(pendingIntent)
                                 .setAutoCancel(true)

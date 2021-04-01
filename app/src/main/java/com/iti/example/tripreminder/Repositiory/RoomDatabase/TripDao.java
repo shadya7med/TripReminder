@@ -32,6 +32,10 @@ public interface TripDao {
     @Query("SELECT * FROM trips WHERE trip_status = :status AND userId = :userId ")
     List<Trips> getTripsForUserByStatus(String userId,String status);
 
+    @Query("SELECT * FROM trips WHERE trip_status <> 'UPCOMING' AND userId = :userId ")
+    List<Trips> getPastTripsForUser(String userId);
+
+
     @Query("SELECT * FROM trips WHERE tripId = :tripID")
     Trips getTripByID(int tripID);
 
@@ -47,8 +51,8 @@ public interface TripDao {
     @Update
     void update(Trips trip);
 
-    @Query("UPDATE trips set trip_type = :sType WHERE tripId = :sID")
-    void update(long sID,String sType);
+    @Query("UPDATE trips set trip_status = :tripStatus WHERE tripId = :tripId")
+    void update(long tripId,String tripStatus);
 
 
     /*Notes DAO*/

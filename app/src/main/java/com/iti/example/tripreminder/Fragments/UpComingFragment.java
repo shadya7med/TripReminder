@@ -116,26 +116,6 @@ public class UpComingFragment extends Fragment {
         }.start();
 
 
-        /*connectedRef = FirebaseDatabase.getInstance().getReference("Trips");
-       connectedRef.child(userId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    tripsList.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                        Trips trip = dataSnapshot.getValue(Trips.class);
-                        tripsList.add(trip);
-                    }
-
-                  //  Toast.makeText(context, ""+tripsList.size(), Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });*/
-
-
         //recyclerView configuration
         tripsListAdapter = new TripsListAdapter(context, tripsList);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -147,18 +127,15 @@ public class UpComingFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent tripDataIntent) {
         if (requestCode == ADD_NEW_TRIP_REQ_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                Trips trip = (Trips) tripDataIntent.getSerializableExtra(TRIP_INFO);
-                //add Trip to Room
                 /*get database instance*/
                 AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
                 /*add trip data to Room*/
                 new Thread() {
                     @Override
                     public void run() {
-                        //trip inserted into db
-                        // db.tripDao().insertOne(trip);
-                        //trip added to local trips array list
-                        tripsList.add(trip);
+                        //refresh trips list from database after new trip added in AddNewTripActivity
+                        tripsList.clear();
+                        tripsList.addAll(db.tripDao().getTripsForUserByStatus(userId, AddNewTripActivity.TRIP_STATUS_UPCOMING));
                         notesListUpdater.sendMessage(new Message());
                     }
                 }.start();

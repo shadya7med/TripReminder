@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.iti.example.tripreminder.Adapters.TripsListAdapter;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
@@ -20,6 +21,7 @@ import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryFragment extends Fragment {
 
@@ -45,18 +47,20 @@ public class HistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recycle_history);
-
+        tripsList = new ArrayList<>();
         //get All upcoming from Room
         AppDatabase db = TripReminderDatabase.getInstance(getContext()).getAppDatabase();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         new Thread(){
             @Override
             public void run() {
                 tripsList.clear();
-                tripsList.addAll(db.tripDao().getTripsByStatus("History"));
+                List<Trips> trips = db.tripDao().getPastTripsForUser(userId);
+                tripsList.addAll(trips);
                 notesListUpdater.sendMessage(new Message());
             }
         }.start();
-        tripsList = new ArrayList<>();
+
         notesListUpdater = new Handler(){
             @Override
             public void handleMessage(@NonNull Message msg) {

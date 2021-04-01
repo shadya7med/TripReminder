@@ -28,6 +28,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.iti.example.tripreminder.Fragments.TimerPickerFragment;
 import com.iti.example.tripreminder.Fragments.UpComingFragment;
 import com.iti.example.tripreminder.Models.Trips;
@@ -36,26 +37,29 @@ import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
 import com.iti.example.tripreminder.Worker.MyWorker;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class AddNewTripActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener,AdapterView.OnItemSelectedListener{
+public class AddNewTripActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener {
     private static final String TAG = "AddNewTripActivity";
     private static final String TAG2 = "Time Picker";
     public static final String TRIP_ID = "trip_id";
     public static final String TRIP_NAME_KEY = "trip_name";
 
-    public static final String TRIP_STATUS_UPCOMING = "UPCOMING" ;
-    public static final String TRIP_STATUS_STARTED = "STARTED" ;
-    public static final String TRIP_STATUS_CANCELED = "CANCELED" ;
+    public static final String TRIP_STATUS_UPCOMING = "UPCOMING";
+    public static final String TRIP_STATUS_STARTED = "STARTED";
+    public static final String TRIP_STATUS_CANCELED = "CANCELED";
 
 
-    TextInputLayout tripName,notes,destination;
-    TextView tripDateTextView , tripTimeTextView;
-    Button add,cancel;
+    TextInputLayout tripName, notes, destination;
+    TextView tripDateTextView, tripTimeTextView;
+    Button add, cancel;
     DatePickerDialog.OnDateSetListener dateSetListener;
 
-    Trips trip ;
+    Trips trip;
     Handler notesListUpdater;
 
     @Override
@@ -79,12 +83,16 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
 
         add.setOnClickListener(v -> {
             trip = saveEditedData();
-            int duration = 10 ;
-            Log.i("msg", "AddNew "+trip.tripName);
+            trip.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            String tripDate = trip.tripDate;
+            String tripTime = trip.tripTime ;
+            long duration = getDuration(tripDate,tripTime);
+            //int duration = 10;//calculated from time and date
+            Log.i("msg", "AddNew " + trip.tripName);
             //create data to hold trip name
             AppDatabase db = TripReminderDatabase.getInstance((this)).getAppDatabase();
             /*add trip data to Room*/
-            new Thread(){
+            new Thread() {
                 @Override
                 public void run() {
                     //trip inserted into db
@@ -94,42 +102,41 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
                     bundle.putString(TRIP_ID, String.valueOf(i));
                     msg.setData(bundle);
                     notesListUpdater.sendMessage(msg);
-                // Log.i("tag", String.valueOf(i[0]));
+                    // Log.i("tag", String.valueOf(i[0]));
                 }
             }.start();
-            notesListUpdater = new Handler(){
+            notesListUpdater = new Handler() {
                 @Override
                 public void handleMessage(@NonNull Message msg) {
                     super.handleMessage(msg);
                     Bundle bundle = msg.getData();
                     String id = bundle.getString(TRIP_ID);
                     Data tripName = new Data.Builder()
-                            .putString(AddNewTripActivity.TRIP_NAME_KEY,trip.tripName)
-                            .putString(TRIP_ID, String.valueOf(id))
+                            .putString(AddNewTripActivity.TRIP_NAME_KEY, trip.tripName)
+                            .putString(AddNewTripActivity.TRIP_ID, String.valueOf(id)) //add destination
                             .build();
-           /* Data tripId = new Data.Builder()
-                    .putString(TRIP_ID, String.valueOf(trip.tripId))
-                    .build();*/
                     //create one time request
                     OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
                             .setInputData(tripName)
-                            // .setInputData(tripId)
-                            .setInitialDelay(duration, TimeUnit.SECONDS)
+                            .setInitialDelay(duration, TimeUnit.MILLISECONDS)
                             .addTag(trip.tripName)
-                            .build() ;
+                            .build();
                     WorkManager.getInstance(getApplicationContext()).enqueue(workRequest);
                     Intent tripDataIntent = new Intent();
-                    tripDataIntent.putExtra(UpComingFragment.TRIP_INFO,trip);
-                    setResult(Activity.RESULT_OK,tripDataIntent);
+                    tripDataIntent.putExtra(UpComingFragment.TRIP_INFO, trip);
+                    setResult(Activity.RESULT_OK, tripDataIntent);
                     finish();
                 }
             };
 
-            });
+        });
         /*-----------------------------------------*/
         /*-----------------2)Cancel----------------*/
         /*-----------------------------------------*/
-        cancel.setOnClickListener(v -> startActivity(new Intent(AddNewTripActivity.this, HomeActivity.class)));
+        cancel.setOnClickListener(v -> {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+        });
         /*-----------------------------------------*/
         /*-----------------3)Date------------------*/
         /*-----------------------------------------*/
@@ -158,22 +165,43 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
 
     }
 
+
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        tripTimeTextView.setText(hourOfDay + ":" + minute);}
+        tripTimeTextView.setText(hourOfDay + ":" + minute);
+
+    }
+
     @Override
     // Performing action when ItemSelected from spinner, Overriding onItemSelected method
-    public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id){}
+    public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+    }
+
     // make toast of name of course which is selected in spinner
-       // {Toast.makeText(getApplicationContext(),status[position], Toast.LENGTH_LONG).show();}
+    // {Toast.makeText(getApplicationContext(),status[position], Toast.LENGTH_LONG).show();}
     @Override
-    public void onNothingSelected(AdapterView<?> arg0) {}
-    Trips saveEditedData(){
+    public void onNothingSelected(AdapterView<?> arg0) {
+    }
+
+    private Trips saveEditedData() {
         Trips trip = new Trips();
         trip.tripName = tripName.getEditText().getText().toString();
         trip.tripDate = tripDateTextView.getText().toString();
         trip.tripTime = tripTimeTextView.getText().toString();
-        trip.tripType = AddNewTripActivity.TRIP_STATUS_UPCOMING;
+        trip.tripStatus = AddNewTripActivity.TRIP_STATUS_UPCOMING;
         return trip;
     }
+    private long getDuration(String tripDate, String tripTime) {
+        String dateTime = tripDate+ " " + tripTime;
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+        try {
+            date = formatter.parse(dateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return (date.getTime() - Calendar.getInstance().getTimeInMillis());
+    }
+
 }

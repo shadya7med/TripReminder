@@ -61,6 +61,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     DatabaseReference rtTripsRef;
     String userId;
     String userEmail;
+    int prevItemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +93,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         // load default fragment
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.fragment_container_nav_content_main, new UpComingFragment(this),DEFAULT_FRAGMENT);
+        fragmentTransaction.add(R.id.fragment_container_nav_content_main, new UpComingFragment(this), DEFAULT_FRAGMENT);
         fragmentTransaction.commit();
 
 
@@ -114,24 +115,28 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
         //emailAddress = findViewById(R.id.textView_email_nav_drawer_header);
         // emailAddress.setText(firebaseUser.getEmail());
+
         if (item.getItemId() == R.id.item_upcoming_nav_menu) {
             fragmentManager = getSupportFragmentManager();
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_container_nav_content_main, new UpComingFragment(this));
             fragmentTransaction.addToBackStack(null).commit();
+            prevItemId = item.getItemId();
         }
         if (item.getItemId() == R.id.item_past_trip_nav_menu) {
             fragmentManager = getSupportFragmentManager();
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_container_nav_content_main, new PastTripFragment());
             fragmentTransaction.addToBackStack(null).commit();
+            prevItemId = item.getItemId();
         }
         if (item.getItemId() == R.id.item_logout_nav_menu) {
             auth.signOut();
             startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+            prevItemId = item.getItemId();
         }
         if (item.getItemId() == R.id.item_sync_nav_menu1) {
-            new Thread(){
+            new Thread() {
                 @Override
                 public void run() {
                     db = TripReminderDatabase.getInstance(HomeActivity.this).getAppDatabase();
@@ -146,22 +151,38 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 if (TripsSnapShot.exists()) {
                                     for (DataSnapshot tripData : TripsSnapShot.getChildren()) {
                                         Trips trip = tripData.getValue(Trips.class);
-                                        trip.userId = userId ;
+                                        trip.userId = userId;
                                         trips.add(trip);
                                     }
-                                    new Thread(){
+                                    new Thread() {
                                         @Override
                                         public void run() {
                                             db.tripDao().insertAll(trips);
-                                            fragmentManager
-                                                    .beginTransaction()
-                                                    .replace(R.id.fragment_container_nav_content_main,new UpComingFragment(HomeActivity.this))
-                                                    .addToBackStack(null)
-                                                    .commit();
+                                            if (prevItemId == R.id.item_upcoming_nav_menu) {
+                                                fragmentManager
+                                                        .beginTransaction()
+                                                        .replace(R.id.fragment_container_nav_content_main, new UpComingFragment(HomeActivity.this))
+                                                        .addToBackStack(null)
+                                                        .commit();
+
+
+                                            }
+                                            if (prevItemId == R.id.item_past_trip_nav_menu) {
+                                                fragmentManager
+                                                        .beginTransaction()
+                                                        .replace(R.id.fragment_container_nav_content_main, new PastTripFragment())
+                                                        .addToBackStack(null)
+                                                        .commit();
+
+                                            }
+
+
                                         }
                                     }.start();
 
 
+                                } else {
+                                    Toast.makeText(HomeActivity.this, "No Trips Stored", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -180,17 +201,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
             }.start();
 
-
-
-            /*db = TripReminderDatabase.getInstance(this).getAppDatabase();
-            connectedRef = FirebaseDatabase.getInstance().getReference("Trips");
-            new Thread(){
-                @Override
-                public void run() {
-                    tripsList = (ArrayList<Trips>) db.tripDao().getAllTrips();
-                    connectedRef.child(userId).setValue(tripsList);
-                }
-            }.start();*/
             Toast.makeText(this, "Syncing Data...", Toast.LENGTH_LONG).show();
         }
         return true;
