@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,17 +32,32 @@ public class FloatingWidgetService extends Service {
 
 
     public static final String NOTES_LIST = "notes_list";
-
+    public static final int NOTES_ON_GOING_NOTIFICATION_ID = 1;
     private WindowManager mWindowManager;
     private View mOverlayView;
     private RecyclerView notesListRcyView;
-    private ArrayList<String> notesList ;
+    private ArrayList<String> notesList;
 
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        /*create non-swipeable notification*/
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1")
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle("Trip Reminder")
+                .setContentText("Notes widget active")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .setOngoing(true);//Ongoing to make notification NON-Swipable
+        /*show notification*/
+        startForeground(NOTES_ON_GOING_NOTIFICATION_ID, builder.build());
     }
 
     @Override
@@ -54,10 +70,9 @@ public class FloatingWidgetService extends Service {
         mOverlayView = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null);
 
 
-
         notesListRcyView = mOverlayView.findViewById(R.id.rcyView_notesList_FWS);
         notesListRcyView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        notesListRcyView.setAdapter(new NotesListAdapter(getApplicationContext(),notesList));
+        notesListRcyView.setAdapter(new NotesListAdapter(getApplicationContext(), notesList));
 
 
         final WindowManager.LayoutParams params;
@@ -136,7 +151,7 @@ public class FloatingWidgetService extends Service {
                             if (isViewCollapsed()) {
                                 collapsedView.setVisibility(View.GONE);
                                 expandedView.setVisibility(View.VISIBLE);
-                            }else{
+                            } else {
                                 collapsedView.setVisibility(View.VISIBLE);
                                 expandedView.setVisibility(View.GONE);
                             }
@@ -146,7 +161,7 @@ public class FloatingWidgetService extends Service {
                     case MotionEvent.ACTION_MOVE:
 
 
-                        if (! isViewCollapsed()) {
+                        if (!isViewCollapsed()) {
                             collapsedView.setVisibility(View.VISIBLE);
                             expandedView.setVisibility(View.GONE);
                         }
@@ -163,8 +178,6 @@ public class FloatingWidgetService extends Service {
                         mWindowManager.updateViewLayout(mOverlayView, params);
 
 
-
-
                         return true;
                 }
                 return false;
@@ -172,8 +185,7 @@ public class FloatingWidgetService extends Service {
         });
 
 
-
-        return Service.START_STICKY ;
+        return Service.START_STICKY;
     }
 
     private boolean isViewCollapsed() {
@@ -185,6 +197,8 @@ public class FloatingWidgetService extends Service {
         super.onDestroy();
         if (mOverlayView != null)
             mWindowManager.removeView(mOverlayView);
+        stopForeground(true);
     }
+
 
 }

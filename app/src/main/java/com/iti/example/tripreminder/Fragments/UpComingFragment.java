@@ -38,10 +38,12 @@ public class UpComingFragment extends Fragment {
     public static final String TRIP_INFO = "trip_info";
 
     FloatingActionButton addNewTripBtn;
+
     RecyclerView recyclerView;
     TripsListAdapter tripsListAdapter;
     ArrayList<Trips> tripsList;
     Handler notesListUpdater ;
+
     Context context;
 
     public UpComingFragment(Context _context){

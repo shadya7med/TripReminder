@@ -12,11 +12,21 @@ import java.io.Serializable;
  *
  *
  * */
+/**
+ * Trip Status:
+ * CANCELLED
+ * UPCOMING
+ * DONE
+ *
+ * */
+
 
 @Entity
 public class Trips implements Serializable {
     @PrimaryKey(autoGenerate = true)
-    public int tripId;
+    public long tripId;
+
+    public String userId;
 
     @ColumnInfo(name = "trip_name")
     public String tripName ;
@@ -36,10 +46,12 @@ public class Trips implements Serializable {
     @ColumnInfo(name = "trip_repetition")
     public String tripRepetition ;
 
-    //notes should be added
 
     @ColumnInfo(name = "trip_type")
     public String tripType ;
+
+    @ColumnInfo(name="trip_status")
+    public String tripStatus;
 
 
 
