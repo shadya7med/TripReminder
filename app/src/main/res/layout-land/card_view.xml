@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="399dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         app:cardBackgroundColor="@color/icons"
         app:cardCornerRadius="15dp"
         app:cardElevation="10dp"
@@ -22,40 +23,27 @@
 
         <TextView
             android:id="@+id/txt_tripName_cardview"
-            android:layout_width="105dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
+            android:layout_marginStart="20dp"
             android:hint="Trip Name"
             android:textColor="@color/accent"
             android:textSize="20dp"
             android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/txt_date_cardview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="65dp"
-            android:drawableLeft="@drawable/ic_calendar"
-            android:drawablePadding="2dp"
-            android:hint="Date"
-            android:textSize="17sp"
-            android:textStyle="bold" />
-
         <ImageView
             android:layout_width="35dp"
-            android:layout_height="34dp"
-            android:layout_marginStart="120dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="33dp"
+            android:layout_marginStart="170dp"
+            android:layout_marginTop="50dp"
             android:rotation="90"
             android:src="@drawable/ic_from_to" />
 
         <ImageView
             android:layout_width="35dp"
-            android:layout_height="34dp"
-            android:layout_marginStart="120dp"
-            android:layout_marginTop="33dp"
+            android:layout_height="33dp"
+            android:layout_marginStart="170dp"
+            android:layout_marginTop="71dp"
             android:rotation="90"
             android:src="@drawable/ic_from_to" />
 
@@ -63,8 +51,8 @@
             android:id="@+id/txt_startingPoint_upcomingFrag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="150dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginLeft="200dp"
+            android:layout_marginTop="50dp"
             android:hint="Starting Point"
             android:textSize="18dp"
             android:textStyle="bold" />
@@ -73,10 +61,10 @@
             android:id="@+id/txt_destination_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="150dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginLeft="200dp"
+            android:layout_marginTop="80dp"
             android:hint="Destination"
-            android:textSize="18sp"
+            android:textSize="18dp"
             android:textStyle="bold" />
 
         <TextView
@@ -84,30 +72,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="97dp"
+            android:layout_marginTop="80dp"
             android:drawableLeft="@drawable/ic_add_alarm"
             android:drawablePadding="2dp"
-            android:hint="Time"
-            android:textSize="17sp"
+            android:hint="Starting Time"
+            android:textSize="18dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_date_cardview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="50dp"
+            android:drawableLeft="@drawable/ic_calendar"
+            android:drawablePadding="2dp"
+            android:hint="Date"
+            android:textSize="18dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txt_note_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="150dp"
-            android:layout_marginTop="70dp"
+            android:layout_marginLeft="400dp"
+            android:layout_marginTop="50dp"
             android:hint="Notes"
-            android:textSize="16sp"
+            android:textSize="18dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txt_status_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center_vertical"
-            android:layout_marginLeft="150dp"
-            android:layout_marginTop="97dp"
+            android:layout_marginLeft="400dp"
+            android:layout_marginTop="80dp"
             android:hint="Status"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -145,16 +144,6 @@
     </androidx.cardview.widget.CardView>
 
     <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="181dp"
-        android:layout_height="149dp"
-        android:layout_marginTop="604dp"
-        android:layout_marginEnd="248dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/blue_circle" />
-
-    <ImageView
         android:id="@+id/imageView15"
         android:layout_width="178dp"
         android:layout_height="151dp"
@@ -165,21 +154,31 @@
         app:srcCompat="@drawable/circle_shape" />
 
     <ImageView
+        android:id="@+id/imageView150"
+        android:layout_width="51dp"
+        android:layout_height="55dp"
+        android:layout_marginEnd="392dp"
+        android:layout_marginBottom="112dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/circle_shape" />
+
+    <ImageView
         android:id="@+id/imageView16"
         android:layout_width="65dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="136dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginEnd="488dp"
+        android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/google_button_layout" />
 
     <ImageView
         android:id="@+id/imageView17"
-        android:layout_width="47dp"
-        android:layout_height="49dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
+        android:layout_width="63dp"
+        android:layout_height="65dp"
+        android:layout_marginEnd="632dp"
+        android:layout_marginBottom="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/square_pink" />
@@ -188,18 +187,28 @@
         android:id="@+id/imageView19"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginEnd="204dp"
-        android:layout_marginBottom="480dp"
+        android:layout_marginEnd="404dp"
+        android:layout_marginBottom="380dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/circle_shape" />
 
     <ImageView
+        android:id="@+id/imageView0"
+        android:layout_width="116dp"
+        android:layout_height="114dp"
+        android:layout_marginTop="112dp"
+        android:layout_marginEnd="500dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/blue_circle" />
+
+    <ImageView
         android:id="@+id/imageView20"
-        android:layout_width="40dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="336dp"
-        android:layout_marginEnd="124dp"
+        android:layout_width="57dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="284dp"
+        android:layout_marginEnd="216dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/blue_circle" />
@@ -208,8 +217,8 @@
         android:id="@+id/imageView24"
         android:layout_width="94dp"
         android:layout_height="91dp"
-        android:layout_marginEnd="308dp"
-        android:layout_marginBottom="460dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="28dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/google_button_layout" />
@@ -238,10 +247,9 @@
         android:id="@+id/imageView27"
         android:layout_width="123dp"
         android:layout_height="122dp"
-        android:layout_marginStart="272dp"
-        android:layout_marginBottom="420dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="320dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/pink_circle" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

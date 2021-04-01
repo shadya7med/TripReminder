@@ -2,27 +2,41 @@ package com.iti.example.tripreminder.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.WorkManager;
 
+import com.iti.example.tripreminder.Activities.EditTripActivity;
+import com.iti.example.tripreminder.Activities.HomeActivity;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
+import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
+import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
 
 import java.util.ArrayList;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.ViewHolder> {
+    private static final String TAG ="TripListAdapter";
     private LayoutInflater layoutInflater;
     private ArrayList<Trips> tripsList;
     private int duration;
     private Context context;
-
+    Trips trip;
+    Handler notesListUpdater;
     public TripsListAdapter(Context context, ArrayList<Trips> tripsList){
         this.context = context ;
         this.layoutInflater = LayoutInflater.from(context);
@@ -49,6 +63,37 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
                   WorkManager.getInstance(context).cancelAllWorkByTag(title);
               }
           });
+          viewHolder.delete.setOnClickListener(v12 -> {
+            AlertDialog dialog = new AlertDialog.Builder(context)
+                    .setTitle("Warning")
+                    .setMessage("On deleting this trip you won't be able to return it back again, delete it?")
+                    .setPositiveButton("Yes",null)
+                    .setNegativeButton("No",null)
+                    .show();
+            Button Yes = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Yes.setOnClickListener(v1 -> {
+                trip = tripsList.get(viewHolder.getAdapterPosition());
+                AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
+                new Thread(){
+                    @Override
+                    public void run() {
+                        db.tripDao().deleteTrip(trip);
+                        tripsList.remove(viewHolder.getAdapterPosition());
+                        notesListUpdater.sendMessage(new Message());
+                    }
+                }.start();
+                notesListUpdater = new Handler(){
+                    @Override
+                    public void handleMessage(@NonNull Message msg) {
+                        super.handleMessage(msg);
+
+                        notifyItemRemoved(viewHolder.getAdapterPosition());
+                        notifyItemRangeChanged(viewHolder.getAdapterPosition(),tripsList.size());
+                        notifyDataSetChanged();
+                    }
+                };
+            });
+        });
     }
 
     @Override
@@ -56,7 +101,7 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         Intent edit_trip_intent,start_trip_intent;
-        ImageView delete,edit,start;
+        ImageButton delete,edit,start;
         TextView TripName,StartingPoint,Destination,TripDate,TripTime,Notes;
         public ViewHolder(@NonNull View v) {
             super(v);
@@ -66,11 +111,13 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
             TripDate = v.findViewById(R.id.txt_date_cardview);
             TripTime = v.findViewById(R.id.txt_startingTime_cardview);
             Notes = v.findViewById(R.id.txt_note_cardview);
-            edit = v.findViewById(R.id.edit_img);
-            start = v.findViewById(R.id.start_img);
-            delete = v.findViewById(R.id.delete_img);
+            edit = v.findViewById(R.id.edit_btn);
+            start = v.findViewById(R.id.start_btn);
+            delete = v.findViewById(R.id.delete_btn);
+
+
+
             //Intents
-           // edit_trip_intent = new Intent(getActivity(),EditTripActivity.class);
             //start_trip_intent = new Intent(getActivity(),MapFragment.class);
             //OnClick Action Buttons
            // edit.setOnClickListener(v -> startActivity(edit_trip_intent));

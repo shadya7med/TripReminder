@@ -5,9 +5,13 @@ package com.iti.example.tripreminder.Activities;
  * ******************** */
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,13 +19,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.iti.example.tripreminder.R;
 
 public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "GoogleSignIn";
     private static final int GOOGLE_SIGN_IN = 123;
-    EditText email, password, rePassword, mobile;
+    TextInputLayout email, password, rePassword, mobile;
+    TextInputEditText emailEditText,passwordEditTest,rePasswordEditText,mobileEditText;
     Button Signup, Gmail;
     FirebaseAuth auth;
     GoogleSignInClient googleSignInClient;
@@ -37,15 +44,52 @@ public class SignUpActivity extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, gso);
         auth = FirebaseAuth.getInstance();
         /*Views Declaration*/
-        email = findViewById(R.id.edtTxt_email_signup);
-        password = findViewById(R.id.edtTxt_password_signup);
-        rePassword = findViewById(R.id.edtTxt_rePassword_signup);
-        mobile = findViewById(R.id.edtTxt_mobile_signup);
-        Signup = findViewById(R.id.btn_SignUp_signup);
-        Gmail = findViewById(R.id.btn_google_signup);
+        email = findViewById(R.id.Txt_email_signUp);
+        password = findViewById(R.id.Txt_password_signUp);
+        rePassword = findViewById(R.id.Txt_rePassword_signUp);
+        mobile = findViewById(R.id.Txt_mobile_signUp);
+        Signup = findViewById(R.id.btn_SignUp_signUp);
+        Gmail = findViewById(R.id.btn_google_singUp);
+        emailEditText = findViewById(R.id.edt_email_signUp);
+        passwordEditTest = findViewById(R.id.edt_password_signUp);
+        rePasswordEditText = findViewById(R.id.edt_rePassword_signUp);
+        mobileEditText = findViewById(R.id.edt_mobile_signUp);
         /*On Buttons Click Actions*/
         Signup.setOnClickListener(v -> SignUpWithEmailAndPassword());
         Gmail.setOnClickListener(v -> SignUpWithGoogle());
+
+        /*  ***************************************************************************
+         *  ********************* Email & PW Verification *****************************
+         *  *************************************************************************** */
+        passwordEditTest.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                if (s.length() > password.getCounterMaxLength())   password.setError("Max character length is " + password.getCounterMaxLength());
+                else if (s.length() < password.getCounterMaxLength()-2)   password.setError("Min character length is " + (password.getCounterMaxLength()-2));
+                else password.setError(null);
+            }
+        });
+        /* *********************************************************************************** */
+        emailEditText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                if (s.length() == 0)   email.setError("Email address Required");
+                else email.setError(null);
+            }
+        });
+        /* ************************************************************************************** */
     }
 
     void SignUpWithGoogle() {
@@ -56,12 +100,12 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     void SignUpWithEmailAndPassword() {
-        String enteredEmail = email.getText().toString().trim();
-        String enteredPassword = password.getText().toString().trim();
-        String enteredRePassword = rePassword.getText().toString().trim();
-        String enteredMobile = mobile.getText().toString().trim();
+        String enteredEmail = emailEditText.toString().trim();
+        String enteredPassword = passwordEditTest.toString().trim();
+        String enteredRePassword = rePasswordEditText.toString().trim();
+
         // Check for entering data
-        if (TextUtils.isEmpty(enteredEmail)) {
+       /* if (TextUtils.isEmpty(enteredEmail)) {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -76,7 +120,7 @@ public class SignUpActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(enteredMobile)) {
             Toast.makeText(getApplicationContext(), "Enter Mobile!", Toast.LENGTH_SHORT).show();
             return;
-        }
+        }*/
 
         //create user
         if (enteredPassword.equalsIgnoreCase(enteredRePassword)) {
@@ -87,7 +131,7 @@ public class SignUpActivity extends AppCompatActivity {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Toast.makeText(SignUpActivity.this, "Authentication failed." + task.getException(),
+                            Toast.makeText(SignUpActivity.this, "Wrong email or password." + task.getException(),
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             startActivity(new Intent(SignUpActivity.this, HomeActivity.class));

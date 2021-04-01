@@ -54,5 +54,10 @@
     <string name="note_body">Fake Note Body</string>
     <string name="channel_name">Reminder Channel</string>
     <string name="channel_description">this is the reminder channel only app</string>
+    <string name="login_page">Already have an Account?</string>
+    <string name="register_sentence">New family member?</string>
+    <string name="join">Join Us.</string>
+    <string name="another_method">______________        Login With Gmail       ______________</string>
+    <string name="signupPageTitle">Here is your first step with us!</string>
 
 </resources>
