@@ -22,7 +22,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.iti.example.tripreminder.Activities.AddNewTripActivity;
+import com.iti.example.tripreminder.Activities.EditTripActivity;
 import com.iti.example.tripreminder.Adapters.TripsListAdapter;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
@@ -30,6 +33,7 @@ import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class UpComingFragment extends Fragment {
@@ -42,17 +46,19 @@ public class UpComingFragment extends Fragment {
     RecyclerView recyclerView;
     TripsListAdapter tripsListAdapter;
     ArrayList<Trips> tripsList;
-    Handler notesListUpdater ;
-
+    Handler notesListUpdater;
+    DatabaseReference tripsRef;
     Context context;
+    String userId;
 
-    public UpComingFragment(Context _context){
-        context = _context ;
+    public UpComingFragment(Context _context) {
+        context = _context;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().setTitle("UpComing Trips");
     }
 
     @Override
@@ -65,42 +71,17 @@ public class UpComingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        tripsList = new ArrayList<>();
         /*refer to views*/
         addNewTripBtn = view.findViewById(R.id.btn_add_upcomingFrg);
         recyclerView = view.findViewById(R.id.recyclerview_upcomingFrag);
-
-        //get All upcoming from Room
-        AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
-        new Thread(){
-            @Override
-            public void run() {
-                tripsList.clear();
-                tripsList.addAll(db.tripDao().getAllTrips());
-                notesListUpdater.handleMessage(new Message());
-            }
-        }.start();
-        tripsList = new ArrayList<>();
-        notesListUpdater = new Handler(){
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                super.handleMessage(msg);
-                tripsListAdapter.notifyDataSetChanged();
-
-            }
-        };
-
-        //recyclerView configuration
-        tripsListAdapter = new TripsListAdapter(context,tripsList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(tripsListAdapter);
-
-
-        Intent addNewTripIntent = new Intent(context, AddNewTripActivity.class);
-        addNewTripBtn.setOnClickListener(v ->{
+        /*set Button Listener*/
+        addNewTripBtn.setOnClickListener(v -> {
             // First it confirms whether the
             // 'Display over other apps' permission in given
             if (checkOverlayDisplayPermission()) {
-                startActivityForResult(addNewTripIntent,ADD_NEW_TRIP_REQ_CODE);
+                Intent addNewTripIntent = new Intent(context, AddNewTripActivity.class);
+                startActivityForResult(addNewTripIntent, ADD_NEW_TRIP_REQ_CODE);
             } else {
                 // If permission is not given,
                 // it shows the AlertDialog box and
@@ -109,24 +90,53 @@ public class UpComingFragment extends Fragment {
             }
 
         });
+        /*create Handler to update the UI*/
+        notesListUpdater = new Handler() {
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                tripsListAdapter.notifyDataSetChanged();
+
+            }
+        };
+        //get Current UserId
+        //this if should be always true --> check
+        //if (FirebaseAuth.getInstance().getCurrentUser() != null) {} //redundant check
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //get All upcoming from Room
+        AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
+        new Thread() {
+            @Override
+            public void run() {
+                tripsList.clear();
+                List<Trips> trips = db.tripDao().getTripsForUserByStatus(userId, AddNewTripActivity.TRIP_STATUS_UPCOMING);
+                tripsList.addAll(trips);
+                notesListUpdater.sendMessage(new Message());
+            }
+        }.start();
+
+
+        //recyclerView configuration
+        tripsListAdapter = new TripsListAdapter(context, tripsList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setAdapter(tripsListAdapter);
+
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent tripDataIntent) {
-        if(requestCode == ADD_NEW_TRIP_REQ_CODE){
-            if(resultCode == Activity.RESULT_OK){
-                Trips trip = (Trips) tripDataIntent.getSerializableExtra(TRIP_INFO);
-                //add Trip to Room
+        if (requestCode == ADD_NEW_TRIP_REQ_CODE || requestCode == EditTripActivity.EDIT_TRIP_REQ_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
                 /*get database instance*/
                 AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
                 /*add trip data to Room*/
-                new Thread(){
+                new Thread() {
                     @Override
                     public void run() {
-                        //trip inserted into db
-                        db.tripDao().insertOne(trip);
-                        //trip added to local trips array list
-                        tripsList.add(trip);
+                        //refresh trips list from database after new trip added in AddNewTripActivity
+                        tripsList.clear();
+                        tripsList.addAll(db.tripDao().getTripsForUserByStatus(userId, AddNewTripActivity.TRIP_STATUS_UPCOMING));
                         notesListUpdater.sendMessage(new Message());
                     }
                 }.start();
@@ -134,6 +144,7 @@ public class UpComingFragment extends Fragment {
             }
         }
     }
+
     private void requestOverlayDisplayPermission() {
         // An AlertDialog is created
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -186,3 +197,4 @@ public class UpComingFragment extends Fragment {
         }
     }
 }
+//u6kP1gRYqRVHMA0HjjLRVZRnQGw2

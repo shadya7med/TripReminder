@@ -1,15 +1,5 @@
 package com.iti.example.tripreminder.Adapters;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.common.data.DataBufferUtils;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.AutocompletePrediction;
-import com.google.android.gms.location.places.AutocompletePredictionBuffer;
-import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.model.LatLngBounds;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.style.CharacterStyle;
@@ -23,11 +13,20 @@ import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.data.DataBufferUtils;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.AutocompletePredictionBuffer;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLngBounds;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-class PlaceAutocompleteAdapter extends ArrayAdapter<AutocompletePrediction> implements Filterable {
+class PlaceAutoCompleteAdapter extends ArrayAdapter<AutocompletePrediction> implements Filterable {
 
     private static final String TAG = "PlaceAutoCompleteAd";
     private static final CharacterStyle STYLE_BOLD = new StyleSpan(Typeface.BOLD);
@@ -36,7 +35,7 @@ class PlaceAutocompleteAdapter extends ArrayAdapter<AutocompletePrediction> impl
     private LatLngBounds mBounds;     //The bounds used for Places Geo Data autocomplete API requests.
     private AutocompleteFilter mPlaceFilter;     //The autocomplete filter used to restrict queries to a specific set of place types.
     //Initializes with a resource for text rows and autocomplete query bounds.
-    public PlaceAutocompleteAdapter(Context context, GoogleApiClient googleApiClient,
+    public PlaceAutoCompleteAdapter(Context context, GoogleApiClient googleApiClient,
                                     LatLngBounds bounds, AutocompleteFilter filter) {
         super(context, android.R.layout.simple_expandable_list_item_2, android.R.id.text1);
         mGoogleApiClient = googleApiClient;

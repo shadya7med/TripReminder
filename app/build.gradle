@@ -56,6 +56,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     compile 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'
 
+
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

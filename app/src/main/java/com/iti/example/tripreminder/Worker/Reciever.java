@@ -93,7 +93,7 @@ public class Reciever extends BroadcastReceiver {
 
 
                         //cancel the current work
-                        WorkManager.getInstance(context).cancelAllWorkByTag("reminder");
+                        WorkManager.getInstance(context).cancelAllWorkByTag(tripName);
 
 
                     }
@@ -110,7 +110,7 @@ public class Reciever extends BroadcastReceiver {
 
                             }
                         }.start();
-                        WorkManager.getInstance(context).cancelAllWorkByTag("reminder");
+                        WorkManager.getInstance(context).cancelAllWorkByTag(tripName);
                         dialog.dismiss();
                     }
                 })

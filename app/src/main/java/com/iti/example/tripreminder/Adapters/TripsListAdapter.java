@@ -2,18 +2,28 @@ package com.iti.example.tripreminder.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.WorkManager;
 
+import com.iti.example.tripreminder.Activities.AddNewTripActivity;
+import com.iti.example.tripreminder.Activities.EditTripActivity;
+import com.iti.example.tripreminder.Activities.HomeActivity;
+import com.iti.example.tripreminder.Fragments.UpComingFragment;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
+import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
+import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
+import com.iti.example.tripreminder.Services.FloatingWidgetService;
 
 import java.util.ArrayList;
 
@@ -23,8 +33,8 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
     private int duration;
     private Context context;
 
-    public TripsListAdapter(Context context, ArrayList<Trips> tripsList){
-        this.context = context ;
+    public TripsListAdapter(Context context, ArrayList<Trips> tripsList) {
+        this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
         this.tripsList = tripsList;
     }
@@ -32,33 +42,140 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = layoutInflater.inflate(R.layout.card_view,viewGroup,false);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
+        View view = layoutInflater.inflate(R.layout.card_view, viewGroup, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-          duration = 10 ;
-          String title = tripsList.get(i).tripName;
-          viewHolder.TripName.setText(title);
-          viewHolder.start.setOnClickListener(new View.OnClickListener() {
-              @Override
-              public void onClick(View v) {
-                    //stop work scheduled for current trip
-                  WorkManager.getInstance(context).cancelAllWorkByTag(title);
-              }
-          });
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
 
+        Trips trip = tripsList.get(position);
+        long tripId = trip.tripId ;
+        String title = trip.tripName;
+        /*populate data*/
+        viewHolder.TripName.setText(title);
+        viewHolder.StartingPoint.setText(trip.startPoint);
+        viewHolder.Destination.setText(trip.endPoint);
+        viewHolder.TripDate.setText(trip.tripDate);
+        viewHolder.TripTime.setText(trip.tripTime);
+        //viewHolder.Notes.setText(trip.);
+
+                /*setting buttons actions */
+        viewHolder.start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //update Room with new data
+                AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        db.tripDao().update(tripId, AddNewTripActivity.TRIP_STATUS_STARTED);
+                        //update local list
+                        //trip added to local trips array list
+                        //  notesListUpdater.sendMessage(new Message());
+                    }
+                }.start();
+                // Creates an Intent that will load a map of San Francisco
+                Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                // Attempt to start an activity that can handle the Intent
+                if (mapIntent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(mapIntent);
+                }
+                //filled from Notes Entity in Room db
+                new Thread() {
+                    @Override
+                    public void run() {
+                        //filed Notes from Notes Table
+                        ArrayList<String> notesList = new ArrayList<>();
+                        notesList.add("this is th first");
+                        notesList.add("this is the second");
+                        notesList.add("this is the third");
+
+                        /*show floating widget*/
+                        Intent showNotesFWS = new Intent(context, FloatingWidgetService.class);
+                        //send Notes List
+                        showNotesFWS.putExtra(FloatingWidgetService.NOTES_LIST, notesList);
+                        //start service
+                        context.startService(showNotesFWS);
+                    }
+                }.start();
+
+                HomeActivity homeActivity = (HomeActivity) context;
+                UpComingFragment upComingFragment = (UpComingFragment) homeActivity.getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
+                homeActivity
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .detach(upComingFragment)
+                        .attach(upComingFragment)
+                        .commit();
+
+
+                //cancel the current work if it's not finished -REDUNDENT
+                WorkManager.getInstance(context).cancelAllWorkByTag(trip.tripName);
+            }
+        });
+        viewHolder.delete.setOnClickListener(v12 -> {
+            AlertDialog dialog = new AlertDialog.Builder(context)
+                    .setTitle("Warning")
+                    .setMessage("On deleting this trip you won't be able to return it back again, delete it?")
+                    .setPositiveButton("Yes", null)
+                    .setNegativeButton("No", null)
+                    .show();
+            Button Yes = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Yes.setOnClickListener(v1 -> {
+                /*Remove selected trip from Room*/
+                AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        /*remove from Room*/
+                        db.tripDao().deleteTrip(trip);
+                        /*remove form local list*/
+                        tripsList.remove(position);
+                        /*update UI*/
+                        ((HomeActivity)context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                notifyDataSetChanged();
+                            }
+                        });
+
+
+                    }
+                }.start();
+
+
+
+                //cancel the current work if it's not finished -REDUNDENT
+                WorkManager.getInstance(context).cancelAllWorkByTag(trip.tripName);
+
+            });
+        });
+        viewHolder.edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*open Edit Trip activity with current trip data*/
+                Intent openEditTrip = new Intent(context, EditTripActivity.class);
+                openEditTrip.putExtra(AddNewTripActivity.TRIP_INFO,trip);
+                ((HomeActivity)context).startActivityForResult(openEditTrip,EditTripActivity.EDIT_TRIP_REQ_CODE);
+
+            }
+        });
     }
 
     @Override
-    public int getItemCount() {return tripsList.size();}
+    public int getItemCount() {
+        return tripsList.size();
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        Intent edit_trip_intent,start_trip_intent;
-        ImageView delete,edit,start;
-        TextView TripName,StartingPoint,Destination,TripDate,TripTime,Notes;
+        Intent edit_trip_intent, start_trip_intent;
+        ImageView delete, edit, start;
+        TextView TripName, StartingPoint, Destination, TripDate, TripTime, Notes;
+
         public ViewHolder(@NonNull View v) {
             super(v);
             TripName = v.findViewById(R.id.txt_tripName_cardview);
@@ -67,15 +184,28 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
             TripDate = v.findViewById(R.id.txt_date_cardview);
             TripTime = v.findViewById(R.id.txt_startingTime_cardview);
             Notes = v.findViewById(R.id.txt_note_cardview);
-            edit = v.findViewById(R.id.edit_img);
-            start = v.findViewById(R.id.start_img);
-            delete = v.findViewById(R.id.delete_img);
+            edit = v.findViewById(R.id.edit_btn);
+            start = v.findViewById(R.id.start_btn);
+            delete = v.findViewById(R.id.delete_btn);
             //Intents
-           // edit_trip_intent = new Intent(getActivity(),EditTripActivity.class);
+            // edit_trip_intent = new Intent(getActivity(),EditTripActivity.class);
             //start_trip_intent = new Intent(getActivity(),MapFragment.class);
             //OnClick Action Buttons
-           // edit.setOnClickListener(v -> startActivity(edit_trip_intent));
+            // edit.setOnClickListener(v -> startActivity(edit_trip_intent));
             //start.setOnClickListener(v -> startActivity(start_trip_intent));
         }
     }
+
 }
+/*
+* notesListUpdater = new Handler() {
+                    @Override
+                    public void handleMessage(@NonNull Message msg) {
+                        super.handleMessage(msg);
+                        tripsList.remove(viewHolder.getAdapterPosition());
+                        notifyItemRemoved(viewHolder.getAdapterPosition());
+                        notifyItemRangeChanged(viewHolder.getAdapterPosition(), tripsList.size());
+                        notifyDataSetChanged();
+                    }
+                };
+* */
