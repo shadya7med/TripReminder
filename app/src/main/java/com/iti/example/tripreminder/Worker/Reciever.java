@@ -79,7 +79,7 @@ public class Reciever extends BroadcastReceiver {
                                     List<Address> addresses = geocoder.getFromLocationName(tripDestination, 5);
                                     if (addresses.size() != 0) {
                                         Log.i("msg", "" + addresses.get(0).getLongitude() + "latit:" + addresses.get(0).getLatitude());
-                                        Uri gmmIntentUri = Uri.parse("geo:" + addresses.get(0).getLatitude() + "," + addresses.get(0).getLongitude() + "?z=8");
+                                        Uri gmmIntentUri = Uri.parse("geo:0,0?q="+Uri.encode(tripDestination));// + addresses.get(0).getLatitude() + "," + addresses.get(0).getLongitude() + "?z=8");
                                         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                                         mapIntent.setPackage("com.google.android.apps.maps");
                                         // Attempt to start an activity that can handle the Intent
