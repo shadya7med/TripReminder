@@ -5,9 +5,12 @@ package com.iti.example.tripreminder.Activities;
  * ********************* */
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -128,14 +131,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (item.getItemId() == R.id.item_past_trip_nav_menu) {
             fragmentManager = getSupportFragmentManager();
             fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container_nav_content_main, new PastTripFragment());
+            fragmentTransaction.replace(R.id.fragment_container_nav_content_main, new PastTripFragment(HomeActivity.this));
             fragmentTransaction.addToBackStack(null).commit();
             prevItemId = item.getItemId();
         }
         if (item.getItemId() == R.id.item_logout_nav_menu) {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(HomeActivity.this, LoginActivity.class));
-            finish();
+            //startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+            //finish();
+            /*restart the App*/
+            Intent mStartActivity = new Intent(HomeActivity.this, LoginActivity.class);
+            int mPendingIntentId = 123456;
+            PendingIntent mPendingIntent = PendingIntent.getActivity(HomeActivity.this, mPendingIntentId,    mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager mgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+            android.os.Process.killProcess(android.os.Process.myPid());
             prevItemId = item.getItemId();
         }
         if (item.getItemId() == R.id.item_sync_nav_menu1) {
@@ -173,7 +183,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                             if (prevItemId == R.id.item_past_trip_nav_menu) {
                                                 fragmentManager
                                                         .beginTransaction()
-                                                        .replace(R.id.fragment_container_nav_content_main, new PastTripFragment())
+                                                        .replace(R.id.fragment_container_nav_content_main, new PastTripFragment(HomeActivity.this))
                                                         .addToBackStack(null)
                                                         .commit();
 

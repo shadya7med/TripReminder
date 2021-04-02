@@ -3,17 +3,17 @@ package com.iti.example.tripreminder.Fragments;
  * Author: Abeer Mickawy *
  * Date : 19th Mar 2021  *
  * ********************* */
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
@@ -27,6 +27,16 @@ public class PastTripFragment extends Fragment {
     TabLayout tabLayout;
     TabItem historyItem, mapItem;
     PagerAdapter adapter;
+    private Context context ;
+
+
+    public PastTripFragment(){
+
+    }
+
+    public PastTripFragment(Context context){
+        this.context = context;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,7 +60,7 @@ public class PastTripFragment extends Fragment {
         historyItem = view.findViewById(R.id.tabitem_history_pasttrips_fragment);
         mapItem = view.findViewById(R.id.tabitem_map_pasttrips_fragment);
 
-        adapter = new PagerAdapter(getChildFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,tabLayout.getTabCount());
+        adapter = new PagerAdapter(getChildFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,tabLayout.getTabCount(),context);
         pager.setAdapter(adapter);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

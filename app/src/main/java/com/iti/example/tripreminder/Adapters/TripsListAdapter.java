@@ -30,14 +30,13 @@ import com.iti.example.tripreminder.Services.FloatingWidgetService;
 import java.util.ArrayList;
 
 public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.ViewHolder> {
-    private LayoutInflater layoutInflater;
+
     private ArrayList<Trips> tripsList;
     private int duration;
     private Context context;
 
     public TripsListAdapter(Context context, ArrayList<Trips> tripsList) {
         this.context = context;
-        this.layoutInflater = LayoutInflater.from(context);
         this.tripsList = tripsList;
     }
 
@@ -45,6 +44,7 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
+        LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.card_view, viewGroup, false);
         return new ViewHolder(view);
     }

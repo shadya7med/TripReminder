@@ -50,6 +50,10 @@ public class UpComingFragment extends Fragment {
     Context context;
     String userId;
 
+    public UpComingFragment(){
+
+    }
+
     public UpComingFragment(Context _context) {
         context = _context;
     }

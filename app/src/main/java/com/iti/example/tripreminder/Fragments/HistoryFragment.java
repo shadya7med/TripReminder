@@ -31,6 +31,10 @@ public class HistoryFragment extends Fragment {
     Handler notesListUpdater ;
 
 
+    public HistoryFragment(){
+
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

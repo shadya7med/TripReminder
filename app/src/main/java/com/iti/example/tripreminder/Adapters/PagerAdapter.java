@@ -1,5 +1,7 @@
 package com.iti.example.tripreminder.Adapters;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -11,9 +13,11 @@ import com.iti.example.tripreminder.Fragments.MapFragment;
 public class PagerAdapter extends FragmentPagerAdapter {
 
         private int tabsNumber;
-    public PagerAdapter(@NonNull FragmentManager fm, int behavior, int tabs) {
+        private Context context;
+    public PagerAdapter(@NonNull FragmentManager fm, int behavior, int tabs, Context context) {
             super(fm, behavior);
             this.tabsNumber = tabs;
+            this.context = context ;
         }
 
         @NonNull
@@ -23,7 +27,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
                 case 0:
                     return new HistoryFragment();
                 case 1:
-                    return new MapFragment();
+                    return new MapFragment(context);
                 default: return null;
             }
         }
