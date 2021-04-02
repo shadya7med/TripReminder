@@ -93,6 +93,12 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
         trip = (Trips) getIntent().getSerializableExtra(AddNewTripActivity.TRIP_INFO);
 
         /*populate TexyViews with trip data*/
+        tripNameEditText.setText(trip.tripName);
+        startingPointEditText.setText(trip.startPoint);
+        destinationEditText.setText(trip.endPoint);
+        //notesEditText.setText(trip.);
+        dateTextView.setText(trip.tripDate);
+        timeTextView.setText(trip.tripTime);
 
         //set EditText nonFocusable
         startingPointEditText.setFocusable(false);
@@ -162,7 +168,8 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
                     String id = bundle.getString(AddNewTripActivity.TRIP_ID);
                     Data tripName = new Data.Builder()
                             .putString(AddNewTripActivity.TRIP_NAME_KEY, trip.tripName)
-                            .putString(AddNewTripActivity.TRIP_ID, String.valueOf(id)) //add destination
+                            .putString(AddNewTripActivity.TRIP_ID, String.valueOf(id))
+                            .putString(AddNewTripActivity.TRIP_DESTINATION,trip.endPoint)//add destination
                             .build();
                     //create one time request
                     OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)

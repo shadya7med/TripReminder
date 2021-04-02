@@ -50,7 +50,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:id="@+id/ext_name_editTrip"
+                android:id="@+id/edt_name_editTrip"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
                 android:drawableLeft="@drawable/ic_name"
@@ -220,12 +220,13 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:text="Add"
+            android:text="@string/edit_btn"
             app:backgroundTint="@color/primary_dark"
             app:layout_constraintEnd_toStartOf="@+id/btn_cancel_newTrip"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txt_note_editTrip"/>
+            app:layout_constraintTop_toBottomOf="@+id/txt_note_editTrip" />
+
         <Button
             android:id="@+id/btn_cancel_editTrip"
             android:layout_width="wrap_content"
@@ -233,12 +234,12 @@
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:padding="5dp"
-            android:text="Cancel"
+            android:text="@string/cancel_btn"
             app:backgroundTint="@color/primary_dark"
             app:layout_constraintBaseline_toBaselineOf="@+id/btn_add_newTrip"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/btn_add_editTrip"/>
+            app:layout_constraintStart_toEndOf="@+id/btn_add_editTrip" />
     </LinearLayout>
     </LinearLayout>
     <ImageView

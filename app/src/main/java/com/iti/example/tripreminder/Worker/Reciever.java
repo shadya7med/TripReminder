@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -24,16 +26,20 @@ import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
 import com.iti.example.tripreminder.Services.FloatingWidgetService;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Reciever extends BroadcastReceiver {
     private String tripId;
     private String tripName;
+    private String tripDestination;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         tripId = intent.getStringExtra(AddNewTripActivity.TRIP_ID);
         tripName = intent.getStringExtra(AddNewTripActivity.TRIP_NAME_KEY);
+        tripDestination = intent.getStringExtra(AddNewTripActivity.TRIP_DESTINATION);
         ArrayList<Trips> tripsList;
         int notificationId = 1;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -53,16 +59,47 @@ public class Reciever extends BroadcastReceiver {
                                 db.tripDao().update(Long.parseLong(tripId), AddNewTripActivity.TRIP_STATUS_STARTED);
                                 //trip added to local trips array list
                                 //  notesListUpdater.sendMessage(new Message());
+                                HomeActivity homeActivity = (HomeActivity) context;
+                                UpComingFragment upComingFragment = (UpComingFragment) homeActivity.getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
+                                homeActivity
+                                        .getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .detach(upComingFragment)
+                                        .attach(upComingFragment)
+                                        .commit();
                             }
                         }.start();
-                        // Creates an Intent that will load a map of San Francisco
-                        Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
-                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                        mapIntent.setPackage("com.google.android.apps.maps");
-                        // Attempt to start an activity that can handle the Intent
-                        if (mapIntent.resolveActivity(context.getPackageManager()) != null) {
-                            context.startActivity(mapIntent);
-                        }
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                // Creates an Intent that will load a map of San Francisco
+                                Geocoder geocoder = new Geocoder(context);
+
+                                try {
+                                    List<Address> addresses = geocoder.getFromLocationName(tripDestination, 1);
+                                    if(addresses.size() != 0){
+                                        Log.i("msg", "" + addresses.get(0).getLongitude() + "latit:" + addresses.get(0).getLatitude());
+                                        Uri gmmIntentUri = Uri.parse("geo:"+addresses.get(0).getLatitude()+","+addresses.get(0).getLongitude()+"?z=15");
+                                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                        mapIntent.setPackage("com.google.android.apps.maps");
+                                        // Attempt to start an activity that can handle the Intent
+                                        if (mapIntent.resolveActivity(context.getPackageManager()) != null) {
+                                            context.startActivity(mapIntent);
+                                        }
+                                    }else{
+                                        //do Nothing
+                                    }
+
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }.start();
+
+
+
                         //filled from Database
                         new Thread() {
                             @Override
@@ -82,15 +119,6 @@ public class Reciever extends BroadcastReceiver {
                             }
                         }.start();
 
-                        HomeActivity homeActivity = (HomeActivity) context;
-                        UpComingFragment upComingFragment = (UpComingFragment) homeActivity.getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
-                        homeActivity
-                                .getSupportFragmentManager()
-                                .beginTransaction()
-                                .detach(upComingFragment)
-                                .attach(upComingFragment)
-                                .commit();
-
 
                         //cancel the current work
                         WorkManager.getInstance(context).cancelAllWorkByTag(tripName);
@@ -107,6 +135,14 @@ public class Reciever extends BroadcastReceiver {
                             @Override
                             public void run() {
                                 db.tripDao().update(Long.parseLong(tripId), AddNewTripActivity.TRIP_STATUS_CANCELED);
+                                HomeActivity homeActivity = (HomeActivity) context;
+                                UpComingFragment upComingFragment = (UpComingFragment) homeActivity.getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
+                                homeActivity
+                                        .getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .detach(upComingFragment)
+                                        .attach(upComingFragment)
+                                        .commit();
 
                             }
                         }.start();

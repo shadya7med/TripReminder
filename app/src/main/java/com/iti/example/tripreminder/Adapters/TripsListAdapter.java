@@ -59,6 +59,7 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
         viewHolder.Destination.setText(trip.endPoint);
         viewHolder.TripDate.setText(trip.tripDate);
         viewHolder.TripTime.setText(trip.tripTime);
+        viewHolder.status.setText(trip.tripStatus);
         //viewHolder.Notes.setText(trip.);
 
                 /*setting buttons actions */
@@ -74,6 +75,14 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
                         //update local list
                         //trip added to local trips array list
                         //  notesListUpdater.sendMessage(new Message());
+                        HomeActivity homeActivity = (HomeActivity) context;
+                        UpComingFragment upComingFragment = (UpComingFragment) homeActivity.getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
+                        homeActivity
+                                .getSupportFragmentManager()
+                                .beginTransaction()
+                                .detach(upComingFragment)
+                                .attach(upComingFragment)
+                                .commit();
                     }
                 }.start();
                 // Creates an Intent that will load a map of San Francisco
@@ -103,14 +112,7 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
                     }
                 }.start();
 
-                HomeActivity homeActivity = (HomeActivity) context;
-                UpComingFragment upComingFragment = (UpComingFragment) homeActivity.getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
-                homeActivity
-                        .getSupportFragmentManager()
-                        .beginTransaction()
-                        .detach(upComingFragment)
-                        .attach(upComingFragment)
-                        .commit();
+
 
 
                 //cancel the current work if it's not finished -REDUNDENT
@@ -148,11 +150,12 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
                 }.start();
 
 
-
+                dialog.dismiss();
                 //cancel the current work if it's not finished -REDUNDENT
                 WorkManager.getInstance(context).cancelAllWorkByTag(trip.tripName);
 
             });
+
         });
         viewHolder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,16 +177,17 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
     public class ViewHolder extends RecyclerView.ViewHolder {
         Intent edit_trip_intent, start_trip_intent;
         ImageView delete, edit, start;
-        TextView TripName, StartingPoint, Destination, TripDate, TripTime, Notes;
+        TextView TripName, StartingPoint, Destination, TripDate, TripTime, Notes,status;
 
         public ViewHolder(@NonNull View v) {
             super(v);
             TripName = v.findViewById(R.id.txt_tripName_cardview);
-            StartingPoint = v.findViewById(R.id.txt_startingTime_cardview);
+            StartingPoint = v.findViewById(R.id.txt_startingPoint_upcomingFrag);
             Destination = v.findViewById(R.id.txt_destination_cardview);
             TripDate = v.findViewById(R.id.txt_date_cardview);
             TripTime = v.findViewById(R.id.txt_startingTime_cardview);
             Notes = v.findViewById(R.id.txt_note_cardview);
+            status = v.findViewById(R.id.txt_status_cardview);
             edit = v.findViewById(R.id.edit_btn);
             start = v.findViewById(R.id.start_btn);
             delete = v.findViewById(R.id.delete_btn);

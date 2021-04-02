@@ -31,6 +31,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
@@ -61,10 +62,12 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
     public static final String TRIP_INFO ="trip_info";
     public static final String TRIP_ID = "trip_id";
     public static final String TRIP_NAME_KEY = "trip_name";
+    public static final String TRIP_DESTINATION = "trip_dest";
 
     public static final String TRIP_STATUS_UPCOMING = "UPCOMING";
     public static final String TRIP_STATUS_STARTED = "STARTED";
     public static final String TRIP_STATUS_CANCELED = "CANCELED";
+
 
 
     TextInputLayout tripNameTextView,notesTextView,destinationTextView,startingPointTextView;
@@ -80,6 +83,9 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_trip);
+        //Initialize places
+        Places.initialize(getApplicationContext(),"AIzaSyDL-OMMDIdvpwywXOGFbjncxF2nhCM2QUc");
+        /*refer to views*/
         tripNameTextView = findViewById(R.id.txt_name_newTrip);
         tripNameEditText = findViewById(R.id.edt_tripName_newTrip);
         startingPointTextView = findViewById(R.id.txt_startingPoint_newTrip);
@@ -134,7 +140,8 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
                     String id = bundle.getString(TRIP_ID);
                     Data tripName = new Data.Builder()
                             .putString(AddNewTripActivity.TRIP_NAME_KEY, trip.tripName)
-                            .putString(AddNewTripActivity.TRIP_ID, String.valueOf(id)) //add destination
+                            .putString(AddNewTripActivity.TRIP_ID, String.valueOf(id))
+                            .putString(AddNewTripActivity.TRIP_DESTINATION,trip.endPoint)//add destination
                             .build();
                     //create one time request
                     OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)

@@ -113,7 +113,7 @@
                 android:ems="10"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ext_name_editTrip"
+                app:layout_constraintTop_toBottomOf="@+id/edt_name_editTrip"
                 tools:ignore="DuplicateIds">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -237,30 +237,32 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:orientation="vertical">
-            <Button
-                android:id="@+id/btn_add_editTrip"
-                android:layout_width="358dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:text="Add"
-                app:backgroundTint="@color/primary_dark"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearlayout3" />
-            <Button
-                android:id="@+id/btn_cancel_editTrip"
-                android:layout_width="358dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:text="Cancel"
-                app:backgroundTint="@color/primary_dark"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_add_editTrip" />
+
+                <Button
+                    android:id="@+id/btn_add_editTrip"
+                    android:layout_width="358dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:text="@string/edit_btn"
+                    app:backgroundTint="@color/primary_dark"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearlayout3" />
+
+                <Button
+                    android:id="@+id/btn_cancel_editTrip"
+                    android:layout_width="358dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:text="@string/cancel_btn"
+                    app:backgroundTint="@color/primary_dark"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_add_editTrip" />
             </LinearLayout>
             </LinearLayout>
     </LinearLayout>

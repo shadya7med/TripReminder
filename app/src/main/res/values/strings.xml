@@ -59,5 +59,8 @@
     <string name="join">Join Us.</string>
     <string name="another_method">______________        Login With Gmail       ______________</string>
     <string name="signupPageTitle">Here is your first step with us!</string>
+    <string name="edit_btn">EDIT</string>
+    <string name="cancel_btn">CANCEL</string>
+    <string name="add_btn">ADD</string>
 
 </resources>

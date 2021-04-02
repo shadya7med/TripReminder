@@ -26,10 +26,12 @@ public class MyWorker extends Worker {
 
         String tripName = getInputData().getString(AddNewTripActivity.TRIP_NAME_KEY);
         String tripId = getInputData().getString(AddNewTripActivity.TRIP_ID);
+        String tripDestination = getInputData().getString(AddNewTripActivity.TRIP_DESTINATION);
         Intent actionIntent = new Intent();
         actionIntent.setAction(HomeActivity.ACTION);
         actionIntent.putExtra(AddNewTripActivity.TRIP_NAME_KEY,tripName);
         actionIntent.putExtra(AddNewTripActivity.TRIP_ID,tripId);
+        actionIntent.putExtra(AddNewTripActivity.TRIP_DESTINATION,tripDestination);
         getApplicationContext().sendBroadcast(actionIntent);
 
         return Result.success();
