@@ -189,15 +189,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         @Override
                                         public void run() {
                                             db.tripDao().insertAll(trips);
-                                            if (prevItemId == R.id.item_upcoming_nav_menu) {
-                                                fragmentManager
-                                                        .beginTransaction()
-                                                        .replace(R.id.fragment_container_nav_content_main, new UpComingFragment(HomeActivity.this))
-                                                        .addToBackStack(null)
-                                                        .commit();
-
-
-                                            }
                                             if (prevItemId == R.id.item_past_trip_nav_menu) {
                                                 fragmentManager
                                                         .beginTransaction()
@@ -205,8 +196,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                         .addToBackStack(null)
                                                         .commit();
 
+                                            }else{
+                                                fragmentManager
+                                                        .beginTransaction()
+                                                        .replace(R.id.fragment_container_nav_content_main, new UpComingFragment(HomeActivity.this))
+                                                        .addToBackStack(null)
+                                                        .commit();
                                             }
-
 
                                         }
                                     }.start();

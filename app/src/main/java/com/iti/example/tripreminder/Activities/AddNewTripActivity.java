@@ -75,9 +75,9 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
 
 
     TextInputLayout tripNameTextView,notesTextView,destinationTextView,startingPointTextView;
-    TextView tripDateTextView , tripTimeTextView,notesEditText;
+    TextView tripDateTextView , tripTimeTextView,notesEditText,startingPointEditText,destinationEditText;
     ImageButton DateButton,TimeButton;
-    TextInputEditText tripNameEditText,startingPointEditText,destinationEditText;
+    TextInputEditText tripNameEditText;
     Button add,cancel;
     DatePickerDialog.OnDateSetListener dateSetListener;
     Trips trip ;
@@ -274,6 +274,7 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
         if(requestCode == AddNewTripActivity.NOTES_REQ_CODE){
             if(resultCode == Activity.RESULT_OK){
                 notesBodyList = data.getStringArrayListExtra(NOTES_BODY_ARRAY);
+                notesEditText.setText("Notes Added");
             }
         }
     }

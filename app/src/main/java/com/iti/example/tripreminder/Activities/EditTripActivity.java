@@ -61,9 +61,9 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
     private static final String TAG2 = "Time Picker";
     private long idHolder;
     TextInputLayout tripNameTextView, startingPointTextView, notesTextView, destinationTextView;
-    TextInputEditText tripNameEditText, startingPointEditText, destinationEditText, notesEditText;
+    TextInputEditText tripNameEditText;
     ImageButton dateBtn, timeBtn;
-    TextView dateTextView, timeTextView;
+    TextView dateTextView, timeTextView, startingPointEditText, destinationEditText, notesEditText;
     Button save, cancel;
     Trips trip;
     DatePickerDialog.OnDateSetListener dateSetListener;

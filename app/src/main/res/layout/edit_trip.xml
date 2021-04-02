@@ -75,19 +75,18 @@
             tools:ignore="DuplicateIds">
             >
 
-            <com.google.android.material.textfield.TextInputEditText
+            <TextView
                 android:id="@+id/edt_startingPoint_editTrip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:background="#FFFFFF"
                 android:drawableLeft="@drawable/ic_location"
                 android:drawablePadding="14dp"
                 android:fontFamily="monospace"
                 android:gravity="center_vertical"
                 android:hint="@string/req_starting_point"
-                app:hintEnabled="true"
-                app:hintTextAppearance="@style/HintText"
-                />
+                android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -103,18 +102,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edt_startingPoint_editTrip"
             tools:ignore="DuplicateIds">>
-            <com.google.android.material.textfield.TextInputEditText
+
+            <TextView
                 android:id="@+id/edt_destination_editTrip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:background="#FFFFFF"
                 android:drawableLeft="@drawable/ic_location"
                 android:drawablePadding="14dp"
                 android:fontFamily="monospace"
                 android:gravity="center_vertical"
                 android:hint="@string/req_destination"
-                app:hintEnabled="true"
-                app:hintTextAppearance="@style/HintText" />
+                android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
