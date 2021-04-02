@@ -20,24 +20,33 @@
             android:exported="false"></service>
 
         <activity android:name=".Activities.PastTripsActivity"
-            android:theme="@style/Theme.NoActionBar"/>
+            android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Activities.HomeActivity"
-            android:theme="@style/Theme.NoActionBar"/>
+            android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Activities.SignUpActivity"
-            android:theme="@style/Theme.NoActionBar"/>
+            android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Activities.AddNewTripActivity"
-            android:theme="@style/Theme.NoActionBar"/>
+            android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Activities.EditTripActivity"
-            android:theme="@style/Theme.NoActionBar"/>
+            android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Activities.ViewTripActivity"
-            android:theme="@style/Theme.NoActionBar"/>
+            android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Activities.AddNotesActivity"
-            android:theme="@style/Theme.NoActionBar"/>
+            android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Activities.LoginActivity"
-            android:theme="@style/Theme.NoActionBar">
+            android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".Activities.SplashScreen"
-            android:theme="@style/Theme.NoActionBar">
+            android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
