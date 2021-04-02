@@ -41,6 +41,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.iti.example.tripreminder.Fragments.TimerPickerFragment;
 import com.iti.example.tripreminder.Fragments.UpComingFragment;
+import com.iti.example.tripreminder.Models.Notes;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
@@ -49,6 +50,7 @@ import com.iti.example.tripreminder.Worker.MyWorker;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -56,6 +58,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class AddNewTripActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener,AdapterView.OnItemSelectedListener{
+    public static final String NOTES_ARRAY = "notes_array" ;
+    public static final String NOTES_BODY_ARRAY = "notes_body_Array";
     private static final String TAG = "AddNewTripActivity";
     private static final String TAG2 = "Time Picker";
 
@@ -67,17 +71,19 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
     public static final String TRIP_STATUS_UPCOMING = "UPCOMING";
     public static final String TRIP_STATUS_STARTED = "STARTED";
     public static final String TRIP_STATUS_CANCELED = "CANCELED";
-
+    private static final int NOTES_REQ_CODE = 600;
 
 
     TextInputLayout tripNameTextView,notesTextView,destinationTextView,startingPointTextView;
-    TextView tripDateTextView , tripTimeTextView;
+    TextView tripDateTextView , tripTimeTextView,notesEditText;
     ImageButton DateButton,TimeButton;
-    TextInputEditText tripNameEditText,startingPointEditText,destinationEditText,notesEditText;
+    TextInputEditText tripNameEditText,startingPointEditText,destinationEditText;
     Button add,cancel;
     DatePickerDialog.OnDateSetListener dateSetListener;
     Trips trip ;
     Handler notesListUpdater;
+    ArrayList<String> notesBodyList ;
+    ArrayList<Notes> notesList ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +91,8 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
         setContentView(R.layout.new_trip);
         //Initialize places
         Places.initialize(getApplicationContext(),"AIzaSyDL-OMMDIdvpwywXOGFbjncxF2nhCM2QUc");
+        notesList =  new ArrayList<>();
+        notesBodyList = new ArrayList<>();
         /*refer to views*/
         tripNameTextView = findViewById(R.id.txt_name_newTrip);
         tripNameEditText = findViewById(R.id.edt_tripName_newTrip);
@@ -124,6 +132,20 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
                 public void run() {
                     //trip inserted into db
                     long i = db.tripDao().insertOne(trip);
+                    if(notesBodyList.size() > 0){
+                        for(String noteBody:notesBodyList){
+                            if(!noteBody.isEmpty()){
+                                Notes note = new Notes();
+                                note.noteBody = noteBody;
+                                note.tId = i ;
+                                notesList.add(note);
+                            }
+
+                        }
+                        //insert trip notes into Room
+                        db.tripDao().insertNotes(notesList);
+                    }
+
                     Message msg = notesListUpdater.obtainMessage();
                     Bundle bundle = new Bundle();
                     bundle.putString(TRIP_ID, String.valueOf(i));
@@ -212,6 +234,17 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
             // 3-Start activity result
             startActivityForResult(StartingPointIntent, 200);
         });
+        /*----------------------------------------*/
+        /*------------- 7)Notes------ ------------*/
+        /*----------------------------------------*/
+        notesEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openNotesList = new Intent(AddNewTripActivity.this,AddNotesActivity.class);
+                startActivityForResult(openNotesList,NOTES_REQ_CODE);
+
+            }
+        });
 
     }
     @Override
@@ -237,6 +270,11 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
             Status status = Autocomplete.getStatusFromIntent(data);
             // Display Toast
             Toast.makeText(getApplicationContext(),status.getStatusMessage(),Toast.LENGTH_SHORT).show();
+        }
+        if(requestCode == AddNewTripActivity.NOTES_REQ_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                notesBodyList = data.getStringArrayListExtra(NOTES_BODY_ARRAY);
+            }
         }
     }
 

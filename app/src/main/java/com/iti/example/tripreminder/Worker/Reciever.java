@@ -76,17 +76,17 @@ public class Reciever extends BroadcastReceiver {
                                 Geocoder geocoder = new Geocoder(context);
 
                                 try {
-                                    List<Address> addresses = geocoder.getFromLocationName(tripDestination, 1);
-                                    if(addresses.size() != 0){
+                                    List<Address> addresses = geocoder.getFromLocationName(tripDestination, 5);
+                                    if (addresses.size() != 0) {
                                         Log.i("msg", "" + addresses.get(0).getLongitude() + "latit:" + addresses.get(0).getLatitude());
-                                        Uri gmmIntentUri = Uri.parse("geo:"+addresses.get(0).getLatitude()+","+addresses.get(0).getLongitude()+"?z=15");
+                                        Uri gmmIntentUri = Uri.parse("geo:" + addresses.get(0).getLatitude() + "," + addresses.get(0).getLongitude() + "?z=8");
                                         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                                         mapIntent.setPackage("com.google.android.apps.maps");
                                         // Attempt to start an activity that can handle the Intent
                                         if (mapIntent.resolveActivity(context.getPackageManager()) != null) {
                                             context.startActivity(mapIntent);
                                         }
-                                    }else{
+                                    } else {
                                         //do Nothing
                                     }
 
@@ -99,21 +99,17 @@ public class Reciever extends BroadcastReceiver {
                         }.start();
 
 
-
                         //filled from Database
                         new Thread() {
                             @Override
                             public void run() {
-                                //filed Notes from Notes Table
-                                ArrayList<String> notesList = new ArrayList<>();
-                                notesList.add("this is th first");
-                                notesList.add("this is the second");
-                                notesList.add("this is the third");
 
+                                //filed Notes from Notes Table
+                                ArrayList<String> notesBodyList = (ArrayList<String>) db.tripDao().getAllNotesForTrip(Long.parseLong(tripId));
                                 /*show floating widget*/
                                 Intent showNotesFWS = new Intent(context, FloatingWidgetService.class);
                                 //send Notes List
-                                showNotesFWS.putExtra(FloatingWidgetService.NOTES_LIST, notesList);
+                                showNotesFWS.putExtra(FloatingWidgetService.NOTES_LIST, notesBodyList);
                                 //start service
                                 context.startService(showNotesFWS);
                             }
@@ -138,13 +134,12 @@ public class Reciever extends BroadcastReceiver {
                                 HomeActivity homeActivity = (HomeActivity) context;
                                 UpComingFragment upComingFragment = (UpComingFragment) homeActivity.getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
 
-                                   homeActivity
-                                           .getSupportFragmentManager()
-                                           .beginTransaction()
-                                           .detach(upComingFragment)
-                                           .attach(upComingFragment)
-                                           .commit();
-
+                                homeActivity
+                                        .getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .detach(upComingFragment)
+                                        .attach(upComingFragment)
+                                        .commit();
 
 
                             }

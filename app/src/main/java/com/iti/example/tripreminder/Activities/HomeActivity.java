@@ -59,7 +59,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-
+    private FirebaseAuth firebaseAuth;
     TextView headerEmail;
     View headerView;
     AppDatabase db;
@@ -136,17 +136,35 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             prevItemId = item.getItemId();
         }
         if (item.getItemId() == R.id.item_logout_nav_menu) {
-            FirebaseAuth.getInstance().signOut();
+            //Declaration and defination
+            FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                    if (firebaseAuth.getCurrentUser() == null) {
+                        //Do anything here which needs to be done after signout is complete
+                        /*restart the App*/
+                        Intent mStartActivity = new Intent(HomeActivity.this, LoginActivity.class);
+                        int mPendingIntentId = 123456;
+                        PendingIntent mPendingIntent = PendingIntent.getActivity(HomeActivity.this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                        AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, mPendingIntent);
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                        prevItemId = item.getItemId();
+                    } else {
+                    }
+                }
+            };
+
+            //Init and attach
+            firebaseAuth = FirebaseAuth.getInstance();
+            firebaseAuth.addAuthStateListener(authStateListener);
+
+            //Call signOut()
+            firebaseAuth.signOut();
+
             //startActivity(new Intent(HomeActivity.this, LoginActivity.class));
             //finish();
-            /*restart the App*/
-            Intent mStartActivity = new Intent(HomeActivity.this, LoginActivity.class);
-            int mPendingIntentId = 123456;
-            PendingIntent mPendingIntent = PendingIntent.getActivity(HomeActivity.this, mPendingIntentId,    mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
-            AlarmManager mgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-            android.os.Process.killProcess(android.os.Process.myPid());
-            prevItemId = item.getItemId();
+
         }
         if (item.getItemId() == R.id.item_sync_nav_menu1) {
             new Thread() {

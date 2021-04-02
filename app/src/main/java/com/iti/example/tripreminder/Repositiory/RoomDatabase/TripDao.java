@@ -59,4 +59,7 @@ public interface TripDao {
     @Insert
     void insertNotes(List<Notes> notes);
 
+    @Query("SELECT note_body FROM notes WHERE tId = :tripId")
+    List<String> getAllNotesForTrip(long tripId);
+
 }

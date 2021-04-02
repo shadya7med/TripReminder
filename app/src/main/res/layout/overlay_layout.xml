@@ -23,7 +23,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginTop="8dp"
-                android:src="@drawable/trips_app"
+                android:src="@drawable/layer_list"
                 tools:ignore="ContentDescription" />
             <ImageView
                 android:id="@+id/close_btn"
@@ -64,7 +64,7 @@
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/trips_app"
+                    android:background="@drawable/layer_list"
                     tools:ignore="ContentDescription" />
 
             </RelativeLayout>

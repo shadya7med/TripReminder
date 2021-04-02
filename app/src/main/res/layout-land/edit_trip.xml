@@ -83,15 +83,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar">
                 >
-                <com.google.android.material.textfield.TextInputEditText
+
+                <TextView
                     android:id="@+id/edt_note_editTrip"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:background="#FFFFFF"
                     android:drawableLeft="@drawable/ic_note_add"
                     android:drawablePadding="16dp"
                     android:fontFamily="monospace"
-                    android:hint="Notes"/>
+                    android:hint="Notes"
+                    android:textSize="16sp" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
         <LinearLayout
