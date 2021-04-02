@@ -56,24 +56,25 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class EditTripActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener {
-    public static final int EDIT_TRIP_REQ_CODE = 90 ;
+    public static final int EDIT_TRIP_REQ_CODE = 90;
     private static final String TAG = "EditTripActivity";
     private static final String TAG2 = "Time Picker";
-    TextInputLayout tripNameTextView,startingPointTextView,notesTextView,destinationTextView;
-    TextInputEditText tripNameEditText,startingPointEditText,destinationEditText,notesEditText;
-    ImageButton dateBtn,timeBtn;
-    TextView dateTextView,timeTextView;
-    Button save,cancel;
+    private long idHolder;
+    TextInputLayout tripNameTextView, startingPointTextView, notesTextView, destinationTextView;
+    TextInputEditText tripNameEditText, startingPointEditText, destinationEditText, notesEditText;
+    ImageButton dateBtn, timeBtn;
+    TextView dateTextView, timeTextView;
+    Button save, cancel;
     Trips trip;
     DatePickerDialog.OnDateSetListener dateSetListener;
-    Handler notesListUpdater ;
+    Handler notesListUpdater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_trip);
         //Initialize places
-        Places.initialize(getApplicationContext(),"AIzaSyDL-OMMDIdvpwywXOGFbjncxF2nhCM2QUc");
+        Places.initialize(getApplicationContext(), "AIzaSyDL-OMMDIdvpwywXOGFbjncxF2nhCM2QUc");
         /*refer for views*/
         tripNameTextView = findViewById(R.id.txt_tripName_editTrip);
         tripNameEditText = findViewById(R.id.edt_name_editTrip);
@@ -91,7 +92,7 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
         cancel = findViewById(R.id.btn_cancel_editTrip);
 
         trip = (Trips) getIntent().getSerializableExtra(AddNewTripActivity.TRIP_INFO);
-
+        idHolder = trip.tripId;
         /*populate TexyViews with trip data*/
         tripNameEditText.setText(trip.tripName);
         startingPointEditText.setText(trip.startPoint);
@@ -112,22 +113,22 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
         /*----------------------------------------*/
         startingPointEditText.setOnClickListener(v -> {
             // 1-Initialize Place Field
-            List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS,Place.Field.LAT_LNG,Place.Field.NAME);
+            List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.NAME);
             // 2-Create intent
-            Intent StartingPointIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY,fieldList).build(EditTripActivity.this);
+            Intent StartingPointIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList).build(EditTripActivity.this);
             // 3-Start activity result
-            startActivityForResult(StartingPointIntent,100);
+            startActivityForResult(StartingPointIntent, 100);
         });
         /*----------------------------------------*/
         /*------------- 2)EndingPoint ------------*/
         /*----------------------------------------*/
         destinationEditText.setOnClickListener(v -> {
             // 1-Initialize Place Field
-            List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS,Place.Field.LAT_LNG,Place.Field.NAME);
+            List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.NAME);
             // 2-Create intent
-            Intent DestinationIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY,fieldList).build(EditTripActivity.this);
+            Intent DestinationIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList).build(EditTripActivity.this);
             // 3-Start activity result
-            startActivityForResult(DestinationIntent,200);
+            startActivityForResult(DestinationIntent, 200);
         });
         /*----------------------------------------*/
         /*-----------------3)Save ----------------*/
@@ -135,17 +136,42 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
         save.setOnClickListener(v -> {
             /*get trip info*/
             trip = saveEditedData();
-            trip.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();//redundant
+            trip.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            trip.tripId = idHolder;
             /*stop current work*/
-            WorkManager.getInstance(EditTripActivity.this).cancelAllWorkByTag(trip.tripName);
+            WorkManager.getInstance(EditTripActivity.this).cancelAllWorkByTag("" + trip.tripId);
 
             String tripDate = trip.tripDate;
-            String tripTime = trip.tripTime ;
-            long duration = getDuration(tripDate,tripTime);
+            String tripTime = trip.tripTime;
+            long duration = getDuration(tripDate, tripTime);
             //int duration = 10;//calculated from time and date
             Log.i("msg", "AddNew " + trip.tripName);
             //create data to hold trip name
             AppDatabase db = TripReminderDatabase.getInstance((this)).getAppDatabase();
+            notesListUpdater = new Handler() {
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    super.handleMessage(msg);
+                    Bundle bundle = msg.getData();
+                    String id = bundle.getString(AddNewTripActivity.TRIP_ID);
+                    Data tripName = new Data.Builder()
+                            .putString(AddNewTripActivity.TRIP_NAME_KEY, trip.tripName)
+                            .putString(AddNewTripActivity.TRIP_ID, String.valueOf(id))
+                            .putString(AddNewTripActivity.TRIP_DESTINATION, trip.endPoint)//add destination
+                            .build();
+                    //create one time request
+                    OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                            .setInputData(tripName)
+                            .setInitialDelay(duration, TimeUnit.MILLISECONDS)
+                            .addTag("" + trip.tripId)
+                            .build();
+                    WorkManager.getInstance(getApplicationContext()).enqueue(workRequest);
+                    Intent tripDataIntent = new Intent();
+                    tripDataIntent.putExtra(UpComingFragment.TRIP_INFO, trip);
+                    setResult(Activity.RESULT_OK, tripDataIntent);
+                    finish();
+                }
+            };
             /*update trip data in Room*/
             new Thread() {
                 @Override
@@ -160,30 +186,7 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
                     // Log.i("tag", String.valueOf(i[0]));
                 }
             }.start();
-            notesListUpdater = new Handler() {
-                @Override
-                public void handleMessage(@NonNull Message msg) {
-                    super.handleMessage(msg);
-                    Bundle bundle = msg.getData();
-                    String id = bundle.getString(AddNewTripActivity.TRIP_ID);
-                    Data tripName = new Data.Builder()
-                            .putString(AddNewTripActivity.TRIP_NAME_KEY, trip.tripName)
-                            .putString(AddNewTripActivity.TRIP_ID, String.valueOf(id))
-                            .putString(AddNewTripActivity.TRIP_DESTINATION,trip.endPoint)//add destination
-                            .build();
-                    //create one time request
-                    OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
-                            .setInputData(tripName)
-                            .setInitialDelay(duration, TimeUnit.MILLISECONDS)
-                            .addTag(trip.tripName)
-                            .build();
-                    WorkManager.getInstance(getApplicationContext()).enqueue(workRequest);
-                    Intent tripDataIntent = new Intent();
-                    tripDataIntent.putExtra(UpComingFragment.TRIP_INFO, trip);
-                    setResult(Activity.RESULT_OK, tripDataIntent);
-                    finish();
-                }
-            };
+
 
         });
         /*-----------------------------------------*/
@@ -220,41 +223,50 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
             timePicker.show(getSupportFragmentManager(), TAG2);
         });
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Case 1 (Starting Point)
-        if(requestCode == 100 && resultCode == RESULT_OK){
+        if (requestCode == 100 && resultCode == RESULT_OK) {
             // when success initialize place
             Place StartingPlace = Autocomplete.getPlaceFromIntent(data);
             // set address on EditText
             startingPointEditText.setText(StartingPlace.getAddress());
         }
         // Case 2 (Destination)
-        else if(requestCode == 200 && resultCode == RESULT_OK){
+        else if (requestCode == 200 && resultCode == RESULT_OK) {
             // when success initialize place
             Place EndingPlace = Autocomplete.getPlaceFromIntent(data);
             // set address on EditText
             destinationEditText.setText(EndingPlace.getAddress());
         }
         // Case 3 (Error)
-        else if (resultCode == AutocompleteActivity.RESULT_ERROR){
+        else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
             // Initialize status
             Status status = Autocomplete.getStatusFromIntent(data);
             // Display Toast
-            Toast.makeText(getApplicationContext(),status.getStatusMessage(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), status.getStatusMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+
     @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {timeTextView.setText(hourOfDay + ":" + minute);}
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        timeTextView.setText(hourOfDay + ":" + minute);
+    }
+
     @Override
     // Performing action when ItemSelected from spinner, Overriding onItemSelected method
-    public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id){}
+    public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+    }
+
     // make toast of name of course which is selected in spinner
     // {Toast.makeText(getApplicationContext(),status[position], Toast.LENGTH_LONG).show();}
     @Override
-    public void onNothingSelected(AdapterView<?> arg0) {}
-    private Trips saveEditedData(){
+    public void onNothingSelected(AdapterView<?> arg0) {
+    }
+
+    private Trips saveEditedData() {
         Trips trip = new Trips();
         trip.tripName = tripNameEditText.getText().toString();
         trip.startPoint = startingPointEditText.getText().toString();
@@ -264,8 +276,9 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
         trip.tripStatus = AddNewTripActivity.TRIP_STATUS_UPCOMING;
         return trip;
     }
+
     private long getDuration(String tripDate, String tripTime) {
-        String dateTime = tripDate+ " " + tripTime;
+        String dateTime = tripDate + " " + tripTime;
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
         try {
@@ -273,7 +286,10 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        return (date.getTime() - Calendar.getInstance().getTimeInMillis());
+        long duration = (date.getTime() - Calendar.getInstance().getTimeInMillis());
+        if (duration < 1000) {
+            duration = 10000;
+        }
+        return duration;
     }
 }

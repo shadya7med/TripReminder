@@ -4,6 +4,7 @@ package com.iti.example.tripreminder.Activities;
  * Date : 20th Mar 2021  *
  * ********************* */
 
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -54,7 +56,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    FirebaseAuth auth;
+
     TextView headerEmail;
     View headerView;
     AppDatabase db;
@@ -131,8 +133,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             prevItemId = item.getItemId();
         }
         if (item.getItemId() == R.id.item_logout_nav_menu) {
-            auth.signOut();
+            FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+            finish();
             prevItemId = item.getItemId();
         }
         if (item.getItemId() == R.id.item_sync_nav_menu1) {
@@ -222,4 +225,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == EditTripActivity.EDIT_TRIP_REQ_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                UpComingFragment upComingFragment = (UpComingFragment) getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .detach(upComingFragment)
+                        .attach(upComingFragment)
+                        .commit();
+            }
+        }
+    }
 }

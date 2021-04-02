@@ -3,30 +3,39 @@ package com.iti.example.tripreminder.Activities;
  * Author: We'am Kamal  *
  * Date : 19th Mar 2021 *
  * ******************** */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.iti.example.tripreminder.R;
 
 public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "GoogleSignIn";
-    private static final int GOOGLE_SIGN_IN = 123;
+    private static final int RC_SIGN_IN = 9001;
+
     TextInputLayout email, password, rePassword, mobile;
     TextInputEditText emailEditText,passwordEditTest,rePasswordEditText,mobileEditText;
     Button Signup, Gmail;
@@ -61,21 +70,6 @@ public class SignUpActivity extends AppCompatActivity {
         /*  ***************************************************************************
          *  ********************* Email & PW Verification *****************************
          *  *************************************************************************** */
-        passwordEditTest.addTextChangedListener(new TextWatcher()
-        {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-            @Override
-            public void afterTextChanged(Editable s)
-            {
-                if (s.length() > password.getCounterMaxLength())   password.setError("Max character length is " + password.getCounterMaxLength());
-                else if (s.length() < password.getCounterMaxLength()-2)   password.setError("Min character length is " + (password.getCounterMaxLength()-2));
-                else password.setError(null);
-            }
-        });
-        /* *********************************************************************************** */
         emailEditText.addTextChangedListener(new TextWatcher()
         {
             @Override
@@ -90,22 +84,52 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
         /* ************************************************************************************** */
+        passwordEditTest.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                if (s.length() > password.getCounterMaxLength())   password.setError("Max character length is " + password.getCounterMaxLength());
+                else if (s.length() < password.getCounterMaxLength()-4)   password.setError("Min character length is " + (password.getCounterMaxLength()-4));
+                else password.setError(null);
+            }
+        });
+        /* *********************************************************************************** */
+        rePasswordEditText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                if (s.length() > rePassword.getCounterMaxLength())   rePassword.setError("Max character length is " + password.getCounterMaxLength());
+                else if (s.length() < rePassword.getCounterMaxLength()-2)   rePassword.setError("Min character length is " + (password.getCounterMaxLength()-2));
+                else rePassword.setError(null);
+            }
+        });
     }
 
-    void SignUpWithGoogle() {
+    void SignUpWithGoogle()
+    {
         Intent signInIntent = googleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, GOOGLE_SIGN_IN);
-        startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
-        finish();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    void SignUpWithEmailAndPassword() {
-        String enteredEmail = emailEditText.toString().trim();
-        String enteredPassword = passwordEditTest.toString().trim();
-        String enteredRePassword = rePasswordEditText.toString().trim();
+    void SignUpWithEmailAndPassword()
+    {
+        String enteredEmail = emailEditText.getText().toString().trim();
+        String enteredPassword = passwordEditTest.getText().toString().trim();
+        String reEnteredPassword = rePasswordEditText.getText().toString().trim();
+        String enteredMobile = mobileEditText.getText().toString().trim();
 
         // Check for entering data
-       /* if (TextUtils.isEmpty(enteredEmail)) {
+        if (TextUtils.isEmpty(enteredEmail)) {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -113,33 +137,82 @@ public class SignUpActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(enteredRePassword)) {
+        if (TextUtils.isEmpty(reEnteredPassword)) {
             Toast.makeText(getApplicationContext(), "Re-enter password!", Toast.LENGTH_SHORT).show();
             return;
         }
         if (TextUtils.isEmpty(enteredMobile)) {
             Toast.makeText(getApplicationContext(), "Enter Mobile!", Toast.LENGTH_SHORT).show();
             return;
-        }*/
+        }
 
         //create user
-        if (enteredPassword.equalsIgnoreCase(enteredRePassword)) {
-            auth.createUserWithEmailAndPassword(enteredEmail, enteredPassword)
-                    .addOnCompleteListener(SignUpActivity.this, task -> {
-                        Toast.makeText(SignUpActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(SignUpActivity.this, "Wrong email or password." + task.getException(),
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
-                            finish();
+        if (enteredPassword.equals(reEnteredPassword))
+        {
+            auth.createUserWithEmailAndPassword(enteredEmail,enteredPassword)
+                    .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()){
+                                Toast.makeText(SignUpActivity.this, "User Signed up please Login", Toast.LENGTH_SHORT).show();
+                                FirebaseUser user = auth.getCurrentUser();
+                                //Intent openLoginIntent =  new Intent(SignUpActivity.this,LoginActivity.class);
+                                //startActivity(openLoginIntent);
+                                finish();
+
+                            }else{
+                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                Toast.makeText(SignUpActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+                                emailEditText.setText("");
+                                passwordEditTest.setText("");
+                                rePasswordEditText.setText("");
+
+                            }
                         }
                     });
-        } else {
+
+
+        }
+        else
+        {
             Toast.makeText(getApplicationContext(), "The passwords are not matched!", Toast.LENGTH_SHORT).show();
         }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try   // Google Sign In was successful, authenticate with Firebase
+            {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                Toast.makeText(getApplicationContext(), "Sign in with gmail succeed", Toast.LENGTH_SHORT).show();
+                firebaseAuthWithGoogle(account.getIdToken());
+            } catch (ApiException e) {
+                Log.w(TAG, "Google sign in failed", e);  // Google Sign In failed, update UI appropriately
+            }
+
+        }
+
+    }
+    //Google Authentication
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        auth.signInWithCredential(credential).addOnCompleteListener(this, task ->
+        {
+            if (task.isSuccessful())   // Sign in success, update UI with the signed-in user's information
+            {
+                Log.d(TAG, "signInWithCredential:success");
+                FirebaseUser user = auth.getCurrentUser();
+                finish();
+            } else     // If sign in fails, display a message to the user.
+            {
+                Log.w(TAG, "signInWithCredential:failure", task.getException());
+                Toast.makeText(SignUpActivity.this, "Authentication failed." + task.getException(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -116,7 +116,7 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
 
 
                 //cancel the current work if it's not finished -REDUNDENT
-                WorkManager.getInstance(context).cancelAllWorkByTag(trip.tripName);
+                WorkManager.getInstance(context).cancelAllWorkByTag(""+trip.tripId);
             }
         });
         viewHolder.delete.setOnClickListener(v12 -> {
@@ -152,7 +152,7 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
 
                 dialog.dismiss();
                 //cancel the current work if it's not finished -REDUNDENT
-                WorkManager.getInstance(context).cancelAllWorkByTag(trip.tripName);
+                WorkManager.getInstance(context).cancelAllWorkByTag(""+trip.tripId);
 
             });
 

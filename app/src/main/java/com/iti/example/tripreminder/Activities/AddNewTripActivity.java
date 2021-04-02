@@ -147,7 +147,7 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
                     OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
                             .setInputData(tripName)
                             .setInitialDelay(duration, TimeUnit.MILLISECONDS)
-                            .addTag(trip.tripName)
+                            .addTag(""+trip.tripId)
                             .build();
                     WorkManager.getInstance(getApplicationContext()).enqueue(workRequest);
                     Intent tripDataIntent = new Intent();

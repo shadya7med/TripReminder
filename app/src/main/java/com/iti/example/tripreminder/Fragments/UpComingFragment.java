@@ -25,7 +25,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.iti.example.tripreminder.Activities.AddNewTripActivity;
-import com.iti.example.tripreminder.Activities.EditTripActivity;
 import com.iti.example.tripreminder.Adapters.TripsListAdapter;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
@@ -126,7 +125,7 @@ public class UpComingFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent tripDataIntent) {
-        if (requestCode == ADD_NEW_TRIP_REQ_CODE || requestCode == EditTripActivity.EDIT_TRIP_REQ_CODE) {
+        if (requestCode == ADD_NEW_TRIP_REQ_CODE ) {
             if (resultCode == Activity.RESULT_OK) {
                 /*get database instance*/
                 AppDatabase db = TripReminderDatabase.getInstance((context)).getAppDatabase();

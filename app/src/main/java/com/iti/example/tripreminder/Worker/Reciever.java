@@ -121,7 +121,7 @@ public class Reciever extends BroadcastReceiver {
 
 
                         //cancel the current work
-                        WorkManager.getInstance(context).cancelAllWorkByTag(tripName);
+                        WorkManager.getInstance(context).cancelAllWorkByTag(tripId);
 
 
                     }
@@ -137,16 +137,19 @@ public class Reciever extends BroadcastReceiver {
                                 db.tripDao().update(Long.parseLong(tripId), AddNewTripActivity.TRIP_STATUS_CANCELED);
                                 HomeActivity homeActivity = (HomeActivity) context;
                                 UpComingFragment upComingFragment = (UpComingFragment) homeActivity.getSupportFragmentManager().findFragmentByTag(HomeActivity.DEFAULT_FRAGMENT);
-                                homeActivity
-                                        .getSupportFragmentManager()
-                                        .beginTransaction()
-                                        .detach(upComingFragment)
-                                        .attach(upComingFragment)
-                                        .commit();
+
+                                   homeActivity
+                                           .getSupportFragmentManager()
+                                           .beginTransaction()
+                                           .detach(upComingFragment)
+                                           .attach(upComingFragment)
+                                           .commit();
+
+
 
                             }
                         }.start();
-                        WorkManager.getInstance(context).cancelAllWorkByTag(tripName);
+                        WorkManager.getInstance(context).cancelAllWorkByTag(tripId);
                         dialog.dismiss();
                     }
                 })
@@ -173,7 +176,7 @@ public class Reciever extends BroadcastReceiver {
                         /*show notification*/
                         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
                         notificationManager.notify(genId, builder.build());
-                        WorkManager.getInstance(context).cancelAllWorkByTag(tripName);
+                        WorkManager.getInstance(context).cancelAllWorkByTag(tripId);
                         dialog.dismiss();
                     }
                 });
