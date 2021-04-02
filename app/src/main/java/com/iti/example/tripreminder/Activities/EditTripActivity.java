@@ -41,6 +41,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.iti.example.tripreminder.Fragments.TimerPickerFragment;
 import com.iti.example.tripreminder.Fragments.UpComingFragment;
+import com.iti.example.tripreminder.Models.Notes;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
@@ -49,11 +50,14 @@ import com.iti.example.tripreminder.Worker.MyWorker;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.iti.example.tripreminder.Activities.AddNewTripActivity.NOTES_BODY_ARRAY;
 
 public class EditTripActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener {
     public static final int EDIT_TRIP_REQ_CODE = 90;
@@ -68,6 +72,8 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
     Trips trip;
     DatePickerDialog.OnDateSetListener dateSetListener;
     Handler notesListUpdater;
+    ArrayList<String> notesBodyList;
+    ArrayList<Notes> notesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +81,8 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
         setContentView(R.layout.edit_trip);
         //Initialize places
         Places.initialize(getApplicationContext(), "AIzaSyDL-OMMDIdvpwywXOGFbjncxF2nhCM2QUc");
+        notesBodyList = new ArrayList<>();
+        notesList = new ArrayList<>();
         /*refer for views*/
         tripNameTextView = findViewById(R.id.txt_tripName_editTrip);
         tripNameEditText = findViewById(R.id.edt_name_editTrip);
@@ -178,6 +186,20 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
                 public void run() {
                     //trip inserted into db
                     db.tripDao().update(trip);
+                    if(notesBodyList.size() > 0){
+                        for(String noteBody:notesBodyList){
+                            if(!noteBody.isEmpty()){
+                                Notes note = new Notes();
+                                note.noteBody = noteBody;
+                                note.tId = idHolder ;
+                                notesList.add(note);
+                            }
+
+                        }
+                        db.tripDao().deleteNotesForTrip(trip.tripId);
+                        //insert trip notes into Room
+                        db.tripDao().insertNotes(notesList);
+                    }
                     Message msg = notesListUpdater.obtainMessage();
                     Bundle bundle = new Bundle();
                     bundle.putString(AddNewTripActivity.TRIP_ID, String.valueOf(trip.tripId));
@@ -222,6 +244,17 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
             DialogFragment timePicker = new TimerPickerFragment();
             timePicker.show(getSupportFragmentManager(), TAG2);
         });
+        /*----------------------------------------*/
+        /*------------- 7)Notes------ ------------*/
+        /*----------------------------------------*/
+        notesEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openNotesList = new Intent(EditTripActivity.this,AddNotesActivity.class);
+                startActivityForResult(openNotesList,AddNewTripActivity.NOTES_REQ_CODE);
+
+            }
+        });
     }
 
     @Override
@@ -247,6 +280,12 @@ public class EditTripActivity extends AppCompatActivity implements TimePickerDia
             Status status = Autocomplete.getStatusFromIntent(data);
             // Display Toast
             Toast.makeText(getApplicationContext(), status.getStatusMessage(), Toast.LENGTH_SHORT).show();
+        }
+        if(requestCode == AddNewTripActivity.NOTES_REQ_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                notesBodyList = data.getStringArrayListExtra(NOTES_BODY_ARRAY);
+                notesEditText.setText("Notes Added");
+            }
         }
     }
 

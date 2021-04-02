@@ -62,4 +62,7 @@ public interface TripDao {
     @Query("SELECT note_body FROM notes WHERE tId = :tripId")
     List<String> getAllNotesForTrip(long tripId);
 
+    @Query("DELETE FROM notes WHERE tId = :tripId")
+    void deleteNotesForTrip(long tripId);
+
 }

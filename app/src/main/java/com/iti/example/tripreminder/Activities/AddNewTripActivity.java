@@ -71,7 +71,7 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
     public static final String TRIP_STATUS_UPCOMING = "UPCOMING";
     public static final String TRIP_STATUS_STARTED = "STARTED";
     public static final String TRIP_STATUS_CANCELED = "CANCELED";
-    private static final int NOTES_REQ_CODE = 600;
+    public static final int NOTES_REQ_CODE = 600;
 
 
     TextInputLayout tripNameTextView,notesTextView,destinationTextView,startingPointTextView;
