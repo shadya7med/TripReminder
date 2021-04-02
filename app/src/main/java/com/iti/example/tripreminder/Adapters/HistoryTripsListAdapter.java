@@ -2,7 +2,6 @@ package com.iti.example.tripreminder.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +11,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.WorkManager;
 
 import com.iti.example.tripreminder.Activities.AddNewTripActivity;
-import com.iti.example.tripreminder.Activities.EditTripActivity;
 import com.iti.example.tripreminder.Activities.HomeActivity;
-import com.iti.example.tripreminder.Fragments.UpComingFragment;
+import com.iti.example.tripreminder.Activities.ViewTripActivity;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.TripReminderDatabase;
-import com.iti.example.tripreminder.Services.FloatingWidgetService;
 
 import java.util.ArrayList;
 
@@ -101,6 +99,14 @@ public class HistoryTripsListAdapter extends RecyclerView.Adapter<HistoryTripsLi
             });
 
         });
+        viewHolder.tripRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openTripViewFromHistory = new Intent(context, ViewTripActivity.class);
+                openTripViewFromHistory.putExtra(AddNewTripActivity.TRIP_INFO,tripsList.get(position));
+                context.startActivity(openTripViewFromHistory);
+            }
+        });
     }
 
     @Override
@@ -111,6 +117,7 @@ public class HistoryTripsListAdapter extends RecyclerView.Adapter<HistoryTripsLi
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView delete;
         TextView TripName, StartingPoint, Destination, TripDate, TripTime, Notes,status;
+        CardView tripRow ;
 
         public ViewHolder(@NonNull View v) {
             super(v);
@@ -122,6 +129,7 @@ public class HistoryTripsListAdapter extends RecyclerView.Adapter<HistoryTripsLi
             Notes = v.findViewById(R.id.txt_note_cardview);
             status = v.findViewById(R.id.txt_status_cardview);
             delete = v.findViewById(R.id.delete_btn);
+            tripRow = v.findViewById(R.id.crdView_tripRow_historyCard);
         }
     }
 

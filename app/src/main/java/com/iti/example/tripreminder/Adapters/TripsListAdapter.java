@@ -12,12 +12,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.WorkManager;
 
 import com.iti.example.tripreminder.Activities.AddNewTripActivity;
 import com.iti.example.tripreminder.Activities.EditTripActivity;
 import com.iti.example.tripreminder.Activities.HomeActivity;
+import com.iti.example.tripreminder.Activities.ViewTripActivity;
 import com.iti.example.tripreminder.Fragments.UpComingFragment;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
@@ -167,6 +169,14 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
 
             }
         });
+        viewHolder.tripRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openTripDetails = new Intent(context, ViewTripActivity.class);
+                openTripDetails.putExtra(AddNewTripActivity.TRIP_INFO,tripsList.get(position));
+                context.startActivity(openTripDetails);
+            }
+        });
     }
 
     @Override
@@ -178,6 +188,7 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
         Intent edit_trip_intent, start_trip_intent;
         ImageView delete, edit, start;
         TextView TripName, StartingPoint, Destination, TripDate, TripTime, Notes,status;
+        CardView tripRow ;
 
         public ViewHolder(@NonNull View v) {
             super(v);
@@ -191,6 +202,7 @@ public class TripsListAdapter extends RecyclerView.Adapter<TripsListAdapter.View
             edit = v.findViewById(R.id.edit_btn);
             start = v.findViewById(R.id.start_btn);
             delete = v.findViewById(R.id.delete_btn);
+            tripRow = v.findViewById(R.id.crdView_tripRow_card);
             //Intents
             // edit_trip_intent = new Intent(getActivity(),EditTripActivity.class);
             //start_trip_intent = new Intent(getActivity(),MapFragment.class);

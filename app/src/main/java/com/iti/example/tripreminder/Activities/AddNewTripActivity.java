@@ -195,22 +195,22 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
         /*----------------------------------------*/
         startingPointEditText.setOnClickListener(v -> {
             // 1-Initialize Place Field
-            List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS,Place.Field.LAT_LNG,Place.Field.NAME);
+            List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.NAME);
             // 2-Create intent
-            Intent StartingPointIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY,fieldList).build(AddNewTripActivity.this);
+            Intent StartingPointIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList).build(AddNewTripActivity.this);
             // 3-Start activity result
-            startActivityForResult(StartingPointIntent,100);
+            startActivityForResult(StartingPointIntent, 100);
         });
         /*----------------------------------------*/
         /*------------- 6)EndingPoint ------------*/
         /*----------------------------------------*/
         destinationEditText.setOnClickListener(v -> {
             // 1-Initialize Place Field
-            List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS,Place.Field.LAT_LNG,Place.Field.NAME);
+            List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.NAME);
             // 2-Create intent
-            Intent DestinationIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY,fieldList).build(AddNewTripActivity.this);
+            Intent StartingPointIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList).build(AddNewTripActivity.this);
             // 3-Start activity result
-            startActivityForResult(DestinationIntent,200);
+            startActivityForResult(StartingPointIntent, 200);
         });
 
     }
