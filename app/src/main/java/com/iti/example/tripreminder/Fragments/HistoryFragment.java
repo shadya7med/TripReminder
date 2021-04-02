@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.iti.example.tripreminder.Adapters.TripsListAdapter;
+import com.iti.example.tripreminder.Adapters.HistoryTripsListAdapter;
 import com.iti.example.tripreminder.Models.Trips;
 import com.iti.example.tripreminder.R;
 import com.iti.example.tripreminder.Repositiory.RoomDatabase.AppDatabase;
@@ -26,7 +26,7 @@ import java.util.List;
 public class HistoryFragment extends Fragment {
 
     RecyclerView recyclerView;
-    TripsListAdapter tripsListAdapter;
+    HistoryTripsListAdapter tripsListAdapter;
     ArrayList<Trips> tripsList;
     Handler notesListUpdater ;
 
@@ -70,7 +70,7 @@ public class HistoryFragment extends Fragment {
             }
         };
         //recyclerView configuration
-        tripsListAdapter = new TripsListAdapter(getContext(),tripsList);
+        tripsListAdapter = new HistoryTripsListAdapter(getContext(),tripsList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(tripsListAdapter);
     }
