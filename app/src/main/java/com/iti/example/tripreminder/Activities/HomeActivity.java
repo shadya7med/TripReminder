@@ -5,12 +5,9 @@ package com.iti.example.tripreminder.Activities;
  * ********************* */
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -143,13 +140,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     if (firebaseAuth.getCurrentUser() == null) {
                         //Do anything here which needs to be done after signout is complete
                         /*restart the App*/
-                        Intent mStartActivity = new Intent(HomeActivity.this, LoginActivity.class);
+                        /*Intent mStartActivity = new Intent(HomeActivity.this, LoginActivity.class);
                         int mPendingIntentId = 123456;
                         PendingIntent mPendingIntent = PendingIntent.getActivity(HomeActivity.this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
                         AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, mPendingIntent);
+                        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 10, mPendingIntent);
                         android.os.Process.killProcess(android.os.Process.myPid());
-                        prevItemId = item.getItemId();
+                        prevItemId = item.getItemId();*/
+                        startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                        finish();
                     } else {
                     }
                 }
@@ -162,8 +161,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             //Call signOut()
             firebaseAuth.signOut();
 
-            //startActivity(new Intent(HomeActivity.this, LoginActivity.class));
-            //finish();
+
 
         }
         if (item.getItemId() == R.id.item_sync_nav_menu1) {

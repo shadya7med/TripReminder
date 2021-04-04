@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -171,7 +172,7 @@ public class AddNewTripActivity extends AppCompatActivity implements TimePickerD
                             .setInitialDelay(duration, TimeUnit.MILLISECONDS)
                             .addTag(""+trip.tripId)
                             .build();
-                    WorkManager.getInstance(getApplicationContext()).enqueue(workRequest);
+                    WorkManager.getInstance(getApplicationContext()).enqueueUniqueWork(""+trip.tripId, ExistingWorkPolicy.REPLACE,workRequest);
                     Intent tripDataIntent = new Intent();
                     tripDataIntent.putExtra(UpComingFragment.TRIP_INFO, trip);
                     setResult(Activity.RESULT_OK, tripDataIntent);
